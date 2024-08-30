@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    string[] colors = new string[]
+    {
+    "red","Green","Blue"
+    };
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+
+    <div>
+        <table>
+    
+        <thead>
+            <tr>
+                    @{
+                        for(int i = 0; i < colors.Length; i++)
+                        {
+
+                            <th>Column : @i</th>
+                        }
+                        }
+            </tr>
+
+        </thead>
+        <tbody>
+                <tr>
+                    @{
+                        for(int i = 0; i < colors.Length; i++)
+                        {
+                            <td style="background-color:@colors[i]; font-family:  sans-serif; color:white">Color = @colors[i]</td>
+                        }
+                    }
+                    
+                </tr>
+
+        </tbody>
+    
+        </table>
+
+    </div>
+
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
