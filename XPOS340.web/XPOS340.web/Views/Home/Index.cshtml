@@ -1,4 +1,6 @@
-﻿@{
+﻿@using XPOS240.ViewModel
+@model List<VMTblCoba>?
+@{
     ViewData["Title"] = "Home Page";
     string[] colors = new string[]
     {
@@ -39,6 +41,34 @@
     
         </table>
 
+        <hr />
+        <table>
+            <thead>
+                <tr>
+        
+                <td>Id</td>
+                <td>name</td>
+                <td>Description</td>
+                <td>Create Date</td>
+                <td>Update Date</td>
+            </tr>
+            </thead>
+            <tbody>
+            @if(Model.Count > 0)
+            {
+                foreach(VMTblCoba coba in Model)
+                {
+                    <tr>
+                        <td>@coba.id</td>
+                        <td>@coba.nama</td>
+                        <td>@coba.description</td>
+                        <td>@coba.createDate.ToString("dd-MM-yyyy")</td>
+                        <td>@coba.updateDate?.ToString("dd-MM-yyyy")</td>
+                    </tr>
+                }
+            }
+            </tbody>
+</table>
     </div>
 
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XPOS240.ViewModel\XPOS240.ViewModel.csproj" />
+    <ProjectReference Include="..\XPOS340.DataModel\XPOS340.DataModel.csproj" />
+  </ItemGroup>
+
+</Project>

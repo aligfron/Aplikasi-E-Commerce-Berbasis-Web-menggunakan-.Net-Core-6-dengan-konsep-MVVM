@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XPOS340.DataModel
+namespace XPOS240.ViewModel
 {
-    [Table("Tbl_Coba")]
-    public class DMTblCoba
+    public class VMTblCoba
     {
-        [Key]
-        public int id {  get; set; }
-        [StringLength(100)]
+        
+        public int id { get; set; }
+        
         public string nama { get; set; } = null!;
-        public string? description {  get; set; }
-        public bool isDeleted {  get; set; }
+        public string? description { get; set; }
+        public bool isDeleted { get; set; }
         public DateTime createDate { get; set; }
         public DateTime? updateDate { get; set; }
     }

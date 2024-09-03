@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using XPOS240.ViewModel;
 using XPOS340.web.Models;
 
 namespace XPOS340.web.Controllers
@@ -7,15 +8,19 @@ namespace XPOS340.web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly HomeModel home;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IConfiguration _config)
         {
             _logger = logger;
+            home = new HomeModel(_config);
         }
 
         public IActionResult Index()
         {
-            return View();
+            //return View();
+            List<VMTblCoba> datacoba = home.getAllCoba();   
+            return View(datacoba);
         }
 
         public IActionResult Privacy()

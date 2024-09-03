@@ -22,6 +22,7 @@ namespace XPOS340.DataModel
             modelBuilder.Entity<DMTblCoba>(entity =>
             {
                 entity.Property(e => e.createDate).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.isDeleted).HasDefaultValue(false);
             });
         }
     }

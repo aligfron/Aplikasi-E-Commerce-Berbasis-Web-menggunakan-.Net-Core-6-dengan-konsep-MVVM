@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using XPOS340.DataModel;
 
@@ -11,9 +12,10 @@ using XPOS340.DataModel;
 namespace XPOS340.DataModel.Migrations
 {
     [DbContext(typeof(XPOS340Context))]
-    partial class XPOS340ContextModelSnapshot : ModelSnapshot
+    [Migration("20240902063039_XPOS340_v2")]
+    partial class XPOS340_v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +50,7 @@ namespace XPOS340.DataModel.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("updateDate")
+                    b.Property<DateTime>("updateDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("id");
