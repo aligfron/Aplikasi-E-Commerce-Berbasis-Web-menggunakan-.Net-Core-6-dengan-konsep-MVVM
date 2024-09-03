@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\XPOS340.DataModel\XPOS340.DataModel.csproj" />
+  </ItemGroup>
+
 </Project>

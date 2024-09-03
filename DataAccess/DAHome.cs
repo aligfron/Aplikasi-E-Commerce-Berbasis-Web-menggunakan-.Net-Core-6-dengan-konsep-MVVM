@@ -20,17 +20,17 @@ namespace DataAccess
             data.Add(
                 new VMTblCoba
                 {
-                    id = 1,
-                    nama = "test",
-                    description = "test"
+                    Id = 1,
+                    Nama = "test",
+                    Description = "test"
 
                 });
             data.Add(
                 new VMTblCoba
                 {
-                    id = 1,
-                    nama = "percobaan",
-                    description = "test"
+                    Id = 1,
+                    Nama = "percobaan",
+                    Description = "test"
 
                 });
         }
@@ -45,16 +45,16 @@ namespace DataAccess
         {
             return (
                 from d in db.TblCobas
-                where d.isDeleted == false
-                && d.id == id
+                where d.IsDeleted == false
+                && d.Id == id
                 select new VMTblCoba
                 {
-                    id = d.id,
-                    nama = d.nama,
-                    description = d.description,
-                    isDeleted = d.isDeleted,
-                    createDate = d.createDate,
-                    updateDate = d.updateDate
+                    Id = d.Id,
+                    Nama = d.Nama,
+                    Description = d.Description,
+                    IsDeleted = d.IsDeleted,
+                    CreateDate = d.CreateDate,
+                    UpdateDate = d.UpdateDate
                 }
                 ).FirstOrDefault();
         }
@@ -65,16 +65,16 @@ namespace DataAccess
             return (
                 from d in db.TblCobas
                 where
-                d.isDeleted == false &&
-                (d.nama.Contains(filter) || d.description.Contains(filter))
+                d.IsDeleted == false &&
+                (d.Nama.Contains(filter) || d.Description.Contains(filter))
                 select new VMTblCoba
                 {
-                    id = d.id,
-                    nama = d.nama,
-                    description = d.description,
-                    isDeleted = d.isDeleted,
-                    createDate = d.createDate,
-                    updateDate = d.updateDate
+                    Id = d.Id,
+                    Nama = d.Nama,
+                    Description = d.Description,
+                    IsDeleted = d.IsDeleted,
+                    CreateDate = d.CreateDate,
+                    UpdateDate = d.UpdateDate
                 }
                 ).ToList();
         }
@@ -82,9 +82,9 @@ namespace DataAccess
         {
             try
             {
-                DMTblCoba data = new DMTblCoba();
-                data.nama = input.nama;
-                data.description = input.description;
+                TblCoba data = new TblCoba();
+                data.Nama = input.Nama;
+                data.Description = input.Description;
                 
                 db.Add(data);
 
@@ -99,23 +99,23 @@ namespace DataAccess
         }
         public VMTblCoba? Update(VMTblCoba input)
         {
-            VMTblCoba? existingdata = GetById(input.id);
+            VMTblCoba? existingdata = GetById(input.Id);
 
             if (existingdata != null)
             {
-                DMTblCoba newData = new DMTblCoba()
+                TblCoba newData = new TblCoba()
                 {
-                    nama = input.nama,
-                    description = input.description,
-                    updateDate = DateTime.Now,
-                    id = existingdata.id,
-                    isDeleted = existingdata.isDeleted,
-                    createDate = existingdata.createDate
+                    Nama = input.Nama,
+                    Description = input.Description,
+                    UpdateDate = DateTime.Now,
+                    Id = existingdata.Id,
+                    IsDeleted = existingdata.IsDeleted,
+                    CreateDate = existingdata.CreateDate
                 };
                 db.Update(newData);
                 db.SaveChanges();
             }
-            return GetById(input.id);
+            return GetById(input.Id);
         }
         public List<VMTblCoba> Delete(int id)
         {
@@ -124,15 +124,15 @@ namespace DataAccess
 
             if (existingdata != null)
             {
-                DMTblCoba newData = new DMTblCoba()
+                TblCoba newData = new TblCoba()
                 {
-                    isDeleted = true,
-                    updateDate = DateTime.Now,
+                    IsDeleted = true,
+                    UpdateDate = DateTime.Now,
 
-                    nama = existingdata.nama,
-                    description = existingdata.description,
-                    id = existingdata.id,
-                    createDate = existingdata.createDate
+                    Nama = existingdata.Nama,
+                    Description = existingdata.Description,
+                    Id = existingdata.Id,
+                    CreateDate = existingdata.CreateDate
                 };
                 db.Update(newData);
                 db.SaveChanges();
