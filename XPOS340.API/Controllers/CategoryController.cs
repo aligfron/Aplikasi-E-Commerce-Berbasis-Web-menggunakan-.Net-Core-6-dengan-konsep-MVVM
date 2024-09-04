@@ -18,7 +18,17 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Ok(await Task.Run(() => category.GetByFilter("")));
+                VMResponse<List<VMTblMCategory>> response = await Task.Run(() => category.GetByFilter(""));
+                if(response.data.Count > 0)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    Console.WriteLine(response.message);
+                    return NoContent();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -46,7 +56,17 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Ok(await Task.Run(() => category.GetById(id)));
+                VMResponse<VMTblMCategory?> response = await Task.Run(() => category.GetById(id));
+                if (response.data != null)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    Console.WriteLine(response.message);
+                    return NoContent();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -74,7 +94,18 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Ok( await Task.Run(() => category.Update(data)));
+                VMResponse<VMTblMCategory?> response = await Task.Run(() => category.Update(data));
+                if (response.data != null)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    Console.WriteLine(response.message);
+                    return NoContent();
+                }
+            
+                
             }
             catch (Exception ex)
             {
@@ -88,7 +119,11 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Ok(await Task.Run(() => category.Delete(id, userId)));
+                VMResponse<VMTblMCategory> response =  await Task.Run(() => category.Delete(id, userId));
+                if(response.data != null) { return Ok(response); }
+                else {
+                    Console.WriteLine(response.message);
+                    return NoContent(); }
             }
             catch (Exception ex)
             {

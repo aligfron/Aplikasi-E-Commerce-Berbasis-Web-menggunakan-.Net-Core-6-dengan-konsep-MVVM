@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using XPOS240.ViewModel;
@@ -13,92 +14,140 @@ namespace DataAccess
 
     {
         private readonly XPOS340Context db;
+
+
+
         public DACategory(XPOS340Context _db) { 
                 db = _db;
         }
-        public List<VMTblMCategory> GetByFilter(string filter)
+        public VMResponse<List<VMTblMCategory>> GetByFilter(string filter)
         {
+            VMResponse<List<VMTblMCategory>> response = new VMResponse<List<VMTblMCategory>>();
             try
             {
                 //throw new Exception("eror");
-                return (
+                response.data = (
                     from c in db.TblMCategories
                     where c.IsDeleted == false
                     && (c.CategoryName.Contains(filter) ||
                     c.Description.Contains(filter))
                     select new VMTblMCategory(c)
                     ).ToList();
+                response.message = (response.data.Count > 0)
+                    ? $"{response.data.Count} of category sukses"
+                    : $"{HttpStatusCode.NoContent} - no data";
+
+                response.statusCode = (response.data.Count > 0)
+                    ? HttpStatusCode.OK
+                    : HttpStatusCode.NoContent;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
             }
-
+            return response;
         }
-        public VMTblMCategory? GetById(int id)
+        public VMResponse<VMTblMCategory?> GetById(int id)
         {
+            VMResponse<VMTblMCategory?> response = new VMResponse<VMTblMCategory?>();
             try
             {
                 if(id > 0)
                 {
-                    return (
+                    response.data = (
+                     
                         from c in db.TblMCategories
                         where c.IsDeleted == false
                         && (c.Id == id )
                         select new VMTblMCategory(c)
                     ).FirstOrDefault();
+
+                    if(response.data != null)
+                    {
+                        response.statusCode = HttpStatusCode.OK;
+                        response.message = $"{HttpStatusCode.OK} - Category Sukses Full";
+                    }
+                    else
+                    {
+                        response.statusCode = HttpStatusCode.NoContent;
+                        response.message = $"{HttpStatusCode.NoContent} - Category does not exis";
+                    }
                 }
                 else
                 {
-                    throw new HttpRequestException("Category ID is not provided");
+                    response.statusCode = HttpStatusCode.BadRequest;
+                    response.message = $"{HttpStatusCode.BadRequest} - please input category";
                 }
             }catch(Exception e)
             {
-                throw new Exception(e.Message);
+                
+                response.message = $"{HttpStatusCode.InternalServerError} - {e.Message}";
             }
+            return response;
         }
 
-        public VMTblMCategory Create(VMTblMCategory data)
+        public VMResponse<VMTblMCategory?> Create(VMTblMCategory data)
         {
-            
-         using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
-         {
-            try
-                {
-                    TblMCategory newData = new TblMCategory();
-                    newData.CategoryName = data.CategoryName;
-                    newData.Description = data.Description;
-                    newData.CreateBy = data.CreateBy;
-
-
-                    db.Add(newData);
-                    db.SaveChanges();
-                    dbTrans.Commit();
-                    return new VMTblMCategory(newData);
-                }
-            catch (Exception ex)
-            {
-                    dbTrans.Rollback();
-                throw new Exception(ex.Message);
-            }
-        }
-            
-        }
-
-        public VMTblMCategory Update(VMTblMCategory data)
-        {
+            var response = new VMResponse<VMTblMCategory?>();
             using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
             {
                 try
                 {
+                    // Create a new TblMCategory object and populate its properties
+                    TblMCategory newData = new TblMCategory
+                    {
+                        CategoryName = data.CategoryName,
+                        Description = data.Description,
+                        CreateBy = data.CreateBy,
+                        CreateDate = DateTime.Now, // Assuming you want to set the current date as the creation date
+                        IsDeleted = false // Assuming new entries are not deleted by default
+                    };
+
+                    // Add the new entry to the database
+                    db.Add(newData);
+                    db.SaveChanges();
+                    dbTrans.Commit();
+
+                    // Set the response data and message for a successful creation
+                    response.data = new VMTblMCategory(newData);
+                    response.statusCode = HttpStatusCode.Created;
+                    response.message = $"{HttpStatusCode.Created} - New Category successfully created.";
+                }
+                catch (Exception ex)
+                {
+                    // Rollback the transaction in case of an error
+                    dbTrans.Rollback();
+
+                    // Set the response message and status code for an error
+                    response.data = null;
+                    response.statusCode = HttpStatusCode.InternalServerError;
+                    response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
+                }
+            }
+
+            return response;
+        }
+
+
+        public VMResponse<VMTblMCategory?> Update(VMTblMCategory data)
+        {
+            var response = new VMResponse<VMTblMCategory?>();
+            using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Retrieve the existing category data from the database
                     var existingData = db.TblMCategories
                                          .FirstOrDefault(c => c.Id == data.Id && !c.IsDeleted);
 
                     if (existingData == null)
                     {
-                        throw new Exception("Kategori tidak ditemukan.");
+                        response.statusCode = HttpStatusCode.NotFound;
+                        response.message = $"{HttpStatusCode.NotFound} - Category Not Found";
+                        return response; // Exit early if the category doesn't exist
                     }
 
+                    // Update the existing data with the new data
                     existingData.CategoryName = data.CategoryName;
                     existingData.Description = data.Description;
                     existingData.UpdateBy = data.UpdateBy;
@@ -107,18 +156,28 @@ namespace DataAccess
                     db.Update(existingData);
                     db.SaveChanges();
                     dbTrans.Commit();
-                    return new VMTblMCategory(existingData);
+
+                    // Set the response with the updated data and a success message
+                    response.data = new VMTblMCategory(existingData);
+                    response.statusCode = HttpStatusCode.OK;
+                    response.message = $"{HttpStatusCode.OK} - Category {response.data.CategoryName} Has Been Updated";
                 }
                 catch (Exception ex)
                 {
+                    // Rollback the transaction in case of an error
                     dbTrans.Rollback();
-                    throw new Exception("Terjadi kesalahan saat memperbarui kategori.", ex);
+                    response.statusCode = HttpStatusCode.InternalServerError;
+                    response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
                 }
             }
+            return response;
         }
 
-        public VMTblMCategory Delete(int id, int userId)
+
+        public VMResponse<VMTblMCategory> Delete(int id, int userId)
+
         {
+            VMResponse<VMTblMCategory?> response = new VMResponse<VMTblMCategory?>();
             using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
             {
                 try
@@ -127,7 +186,9 @@ namespace DataAccess
                                                    .FirstOrDefault(c => c.Id == id && !c.IsDeleted);
                     if (existingData == null)
                     {
-                        throw new Exception("Kategori tidak ditemukan.");
+
+                        response.statusCode = HttpStatusCode.NotFound;
+                        response.message = $"{HttpStatusCode.NotFound} - Category Not Fount";
                     }
 
                     // Update the necessary fields before marking as deleted
@@ -139,15 +200,19 @@ namespace DataAccess
                     db.SaveChanges();
                     dbTrans.Commit();
 
-                    return new VMTblMCategory(existingData);
+                    response.data = new VMTblMCategory(existingData);
+
+                    response.statusCode = HttpStatusCode.OK;
+                    response.message = $"{HttpStatusCode.OK} - Category {response.data.CategoryName} Has been Deleted";
                 }
                 catch (Exception ex)
                 {
                     // Rollback the transaction if an error occurs
                     dbTrans.Rollback();
-                    throw new Exception("Terjadi kesalahan saat menghapus kategori.", ex);
+                    response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
                 }
             }
+            return response;
         }
 
 

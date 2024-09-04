@@ -23,7 +23,10 @@ namespace XPOS240.ViewModel
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
 
-        public VMTblMCustomer(TblMCustomer customer)
+
+        public VMTblMCustomer()
+        { }
+            public VMTblMCustomer(TblMCustomer customer)
         {
             Id = customer.Id;
             Name = customer.Name;

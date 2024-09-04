@@ -27,6 +27,21 @@ namespace XPOS240.ViewModel
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
 
+        public VMTblMProduct() { }
+        public VMTblMProduct(TblMProduct product) {
+            Id = product.Id;
+            Name = product.Name;
+            Price = product.Price;
+            Stock = product.Stock;
+            VariantId = product.VariantId;
+            Image = product.Image;
+            IsDeleted = product.IsDeleted;
+            CreateBy = product.CreateBy;
+            CreateDate = product.CreateDate;
+            UpdateBy = product.UpdateBy;
+            UpdateDate = product.UpdateDate;
+
+        }
         public VMTblMProduct(TblMProduct product, TblMVariant variant, TblMCategory category)
         {
             Id = product.Id;
