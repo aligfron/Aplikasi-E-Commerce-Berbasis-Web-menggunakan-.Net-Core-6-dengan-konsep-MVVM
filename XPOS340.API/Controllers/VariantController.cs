@@ -52,7 +52,7 @@ namespace XPOS340.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("[action]/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {
             try

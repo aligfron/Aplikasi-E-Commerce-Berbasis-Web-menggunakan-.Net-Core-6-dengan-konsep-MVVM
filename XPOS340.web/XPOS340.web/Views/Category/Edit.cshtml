@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMTblMCategory?
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-header h3">@ViewBag.Title</div>
+    <div class="card-body">
+        @{
+            if(Model != null){
+                    <form id="frmCategory" method="post" asp-controller="Category" asp-action="Edit">
+                    <div class="card-title row">
+                        <div class="col-4">Category Name</div>
+                        <div class="col-8"><input type="text" class="form-control" name="CategoryName" Value="@Model.CategoryName" /></div>
+                    </div>
+                    <div class="card-title row">
+                        <div class="col-4">Category Name</div>
+                        <div class="col-8"><input type="text" class="form-control name="Description" Value="@Model.Description" /></div>
+                    </div>
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <input type="hidden" name="UodateBy" value="2" />
+                    </form>
+            }
+            else{
+                    <div class="card-title">
+                        Kategori Kosong
+                    </div>
+            }
+        }
+        
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <button class="btn btn-succes" id="btnSave">Save</button>
+    </div>
+</div>
+<script>
+    $("#btnSave").click(function (e) {
+        $("#frmCategory").submit();
+    });
+</script>

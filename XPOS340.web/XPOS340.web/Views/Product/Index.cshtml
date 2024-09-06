@@ -1,0 +1,85 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<VMTblMProduct>?
+@{
+}
+<div class="h3 mb-3">
+    @ViewBag.Title
+</div>
+
+<div class="d-flex justify-content-between">
+    <button class="btn btn-success"><i class="fas fa-plus"></i></button>
+    <div class="input-group mx-5">
+        <span class="input-group-text">Show </span>
+        <input class="form-control" type="text" id="pageSize" name="PageZise" value="10" />
+        <span class="input-group-text"> Entris</span>
+
+    </div>
+    <form  id="frmCategoryFilter" asp-controller="Product" asp-action="Index" >
+    <div class="input-group">
+        <span class="input-group-text">Search : </span>
+        <input class="form-control" type="text" id="filter" name="filter" value="@ViewBag.filter" />
+        <button type="submit" class="btn btn-primary input-group-text"><i class="fas fa-search"></i></button>
+    </div>
+    </form>
+</div>
+
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="col-2">Image</th>
+                <th class="col-1">ID</th>
+                <th class="col-2">Name</th>
+                <th class="col-1">Price</th>
+                <th class="col-1">Stok</th>
+                <th class="col-2">Variant Name</th>
+                <th class="col-2">Category Price</th>
+                <th class="col-3">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (Model != null)
+                {
+                    foreach (VMTblMProduct product in Model)
+                    {
+                        <tr>
+                            <td>@product.Image</td>
+                            <td>@product.Id</td>
+                            <td>@product.CategoryName</td>
+                            <td>@product.Price</td>
+                            <td>@product.Stock</td>
+                            <td>@product.VariantName</td>
+                            <td>@product.CategoryName</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-info" title="Detail"><i class="fas fa-list"></i></button>
+                                    <button class="btn btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">Data Belum Ada</td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-10">page ? of ?</div>
+    <div class="btn-group col-2">
+        <button class="btn btn-secondary" title="Previous Page..."><i class="fas fa-backward"></i></button>
+        <button class="btn btn-secondary" title="Next Page..."><i class="fas fa-forward"></i></button>
+    </div>
+</div>
