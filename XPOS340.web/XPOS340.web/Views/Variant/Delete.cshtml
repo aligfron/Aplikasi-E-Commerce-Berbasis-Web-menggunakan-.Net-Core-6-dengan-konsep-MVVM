@@ -1,0 +1,57 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model int
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div>
+            <i class="fas fa-exclamation-triangle text-danger h1 me-3"></i>
+            <span>Are you sure want to Delete Variant with ID @Model?</span>
+            <br />
+        </div>
+        <div class="card-footer d-flax justify-content-end">
+            <button id="btnDelete" class="btn btn-danger">Confirm</button>
+            &nbsp;
+            <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $("#staticModalLabel").text("@ViewBag.Title");
+    $("#btnDelete").click(function (e) {
+        $.ajax({
+            url: "/Variant/Delete",
+            type: "post",
+            data: {
+                "id": @Model,  // Kirim id kategori
+                "userId": 3   // Kirim userId
+            },
+            dataType: "json",
+            //beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 200 || response.statusCode == 201) {
+                    // Tampilkan alert sukses
+                    $("#alertDanger").show();
+
+                    // Reload halaman setelah beberapa detik
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000); // Tunggu 2 detik sebelum reload
+                } else {
+                    alert(response.statusCose + " - " + response.message)
+                }
+            },
+            error: function (errResponse) {
+                console.error(errResponse);
+            }
+        });
+    });
+</script>

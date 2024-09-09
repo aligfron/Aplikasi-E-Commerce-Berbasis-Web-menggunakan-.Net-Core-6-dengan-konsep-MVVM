@@ -18,5 +18,17 @@ namespace XPOS340.web.Controllers
             ViewBag.filter = filter;
             return View(data);
         }
+        public IActionResult Delete(int id)
+        {
+
+            ViewBag.Title = "Delete Customer";
+
+            return View(id);
+        }
+        [HttpPost]
+        public async Task<VMResponse<VMTblMCustomer>?> DeleteAsync(int id, int userId)
+        {
+            return (await customer.DeleteAsync(id, userId));
+        }
     }
 }

@@ -1,22 +1,15 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-
 @model List<VMTblMVariant>?
 @{
 }
 <div class="h3 mb-3">
     @ViewBag.Title
 </div>
-<div id="alertDanger" class="alert alert-danger" role="alert" style="display:none;">
-    Kategori berhasil dihapus!
-</div>
-<!-- Notifikasi sukses -->
-<div id="alertSuccess" class="alert alert-success" role="alert" style="display:none;">
-    Kategori berhasil ditambahkan!
-</div>
+
 <div class="d-flex justify-content-between">
-    <button id="btnAdd" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-plus"></i></button>
+    <button class="btn btn-success"><i class="fas fa-plus"></i></button>
     <div class="input-group mx-5">
         <span class="input-group-text">Show </span>
         <input class="form-control" type="text" id="pageSize" name="PageZise" value="10" />
@@ -44,9 +37,10 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model != null && Model.Count > 0)
+            @{
+                if (Model != null)
                 {
-                    foreach(VMTblMVariant variant in Model)
+                    foreach (VMTblMVariant variant in Model)
                     {
                         <tr>
                             <td>@variant.Id</td>
@@ -54,10 +48,10 @@
                             <td>@variant.Name</td>
                             <td>@variant.Description</td>
                             <td>
-                            <div class="btn-group" role="group">
-                                <button data-id="@variant.Id" class="btn btn-info" title="Detail" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-list"></i></button>
-                                <button data-id="@variant.Id" class="btn btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-edit"></i></button>
-                                <button data-id="@variant.Id" class="btn btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-trash-alt"></i></button>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-info" title="Detail"><i class="fas fa-list"></i></button>
+                                    <button class="btn btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -69,7 +63,7 @@
                         <td colspan="7" class="text-center">Data Belum Ada</td>
                     </tr>
                 }
-            
+            }
 
         </tbody>
 
@@ -83,28 +77,3 @@
         <button class="btn btn-secondary" title="Next Page..."><i class="fas fa-forward"></i></button>
     </div>
 </div>
-<script>
-    function detailClick() {
-
-    }
-    $("#btnAdd").click(function (e) {
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Variant/Create/");
-    });
-    $(".btn-info").click(function (e) {
-
-        //alert("Saya di Tekan (Id = " + $(this).data("id") + ")!");
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Variant/Details/" + $(this).data("id"));
-        //location.href="/Category/Details/" + $(this).data("id");
-    });
-
-    $(".btn-primary").click(function (e) {
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Variant/Edit/" + $(this).data("id"));
-    });
-    $(".btn-danger").click(function (e) {
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Variant/Delete/" + $(this).data("id"));
-    });
-</script>

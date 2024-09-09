@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using XPOS340.DataModel;
@@ -10,6 +11,8 @@ namespace XPOS240.ViewModel
 {
     public partial class VMTblMCategory
     {
+        public HttpStatusCode statusCode;
+
         public int Id { get; set; }
         public string CategoryName { get; set; } = null!;
         public string Description { get; set; } = null!;

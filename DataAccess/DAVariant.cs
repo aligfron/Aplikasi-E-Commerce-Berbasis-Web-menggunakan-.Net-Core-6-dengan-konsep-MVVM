@@ -16,48 +16,7 @@ namespace DataAccess
         private DACategory kategori;
         public DAVariant(XPOS340Context _db) {
             db = _db;
-            kategori = new DACategory( _db);
-        }
-        public VMResponse<VMTblMVariant> GetById(int id)
-        {
-            VMResponse<VMTblMVariant> response = new VMResponse<VMTblMVariant>();
-            try
-            {
-                response.data = (
-                    from v in db.TblMVariants
-                    join c in db.TblMCategories on v.CategoryId equals c.Id
-                    where v.IsDeleted == false && v.Id == id
-                    select new VMTblMVariant
-                    {
-                        Id = v.Id,
-                        Name = v.Name,
-                        Description = v.Description,
-
-                        CategoryId = v.CategoryId,
-                        CategoryName = c.CategoryName,
-
-                        CreateBy = v.CreateBy,
-                        CreateDate = v.CreateDate,
-                        UpdateBy = v.UpdateBy,
-                        UpdateDate = v.UpdateDate
-                    }
-                    ).FirstOrDefault();
-                if (response.data != null)
-                {
-                    response.statusCode = HttpStatusCode.OK;
-                    response.message = $"{HttpStatusCode.OK} - Category Sukses Full";
-                }
-                else
-                {
-                    response.statusCode = HttpStatusCode.NoContent;
-                    response.message = $"{HttpStatusCode.NoContent} - Category does not exis";
-                }
-            }
-            catch (Exception ex)
-            {
-                response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
-            }
-            return response;
+           kategori = new DACategory( _db);
         }
         public VMResponse<List<VMTblMVariant>> GetByFilter(string filter)
         {
@@ -68,9 +27,19 @@ namespace DataAccess
                     from v in db.TblMVariants
                     join c in db.TblMCategories on v.CategoryId equals c.Id
                     where v.IsDeleted == false && (c.CategoryName.Contains(filter) || v.Name.Contains(filter) || v.Description!.Contains(filter))
-                    select new VMTblMVariant(v,c)
-                   
+                    select new VMTblMVariant(v, c)
                     ).ToList();
+                if (response.data != null && response.data.Count > 0)
+                {
+                    response.statusCode = HttpStatusCode.OK;
+                    response.message = $"{HttpStatusCode.OK} - Category Sukses Full";
+                }
+                else
+                {
+                    response.statusCode = HttpStatusCode.NoContent;
+                    response.message = $"{HttpStatusCode.NoContent} - Category does not exis";
+                }
+
             }
             catch (Exception ex)
             {
@@ -78,6 +47,44 @@ namespace DataAccess
             }
             return response;
         }
+        public VMResponse<VMTblMVariant?> GetById(int id)
+        {
+            VMResponse<VMTblMVariant?> response = new VMResponse<VMTblMVariant?>();
+            try
+            {
+                if (id > 0)
+                {
+                    response.data = (
+                    from v in db.TblMVariants
+                    join c in db.TblMCategories on v.CategoryId equals c.Id
+                    where v.IsDeleted == false && v.Id == id
+                    select new VMTblMVariant(v,c)
+                    ).FirstOrDefault();
+                    if (response.data != null)
+                    {
+                        response.statusCode = HttpStatusCode.OK;
+                        response.message = $"{HttpStatusCode.OK} - Category Sukses Full";
+                    }
+                    else
+                    {
+                        response.statusCode = HttpStatusCode.NoContent;
+                        response.message = $"{HttpStatusCode.NoContent} - Category does not exis";
+                    }
+                }
+                else
+                {
+                    response.statusCode = HttpStatusCode.BadRequest;
+                    response.message = $"{HttpStatusCode.BadRequest} - please input category";
+                }
+            }
+            catch (Exception e)
+            {
+
+                response.message = $"{HttpStatusCode.InternalServerError} - {e.Message}";
+            }
+            return response;
+        }
+
         public VMResponse<VMTblMVariant?> Create(VMTblMVariant data)
         {
             var response = new VMResponse<VMTblMVariant?>();
@@ -85,7 +92,7 @@ namespace DataAccess
             {
                 try
                 {
-                    if (kategori.GetById(data.CategoryId).data != null)
+                   if(kategori.GetById(data.CategoryId).data != null)
                     {
                         TblMVariant newData = new TblMVariant
                         {
@@ -118,10 +125,13 @@ namespace DataAccess
 
                 catch (Exception ex)
                 {
+                    // Rollback the transaction in case of an error
                     dbtran.Rollback();
 
                     // Set the response message and status code for an error
-                    response.data = null; response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
+                    response.data = null;
+                    response.statusCode = HttpStatusCode.InternalServerError;
+                    response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
                 }
             }
                 return response;
@@ -170,7 +180,7 @@ namespace DataAccess
         }
         public VMResponse<VMTblMVariant> delete(int id, int userid)
         {
-            VMResponse<VMTblMVariant> response = new VMResponse<VMTblMVariant>();
+            VMResponse<VMTblMVariant?> response = new VMResponse<VMTblMVariant?>();
             using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
             {
                 try
@@ -196,7 +206,7 @@ namespace DataAccess
                     response.data = new VMTblMVariant(existingData);
 
                     response.statusCode = HttpStatusCode.OK;
-                    response.message = $"{HttpStatusCode.OK} - Category {response.data.CategoryName} Has been Deleted";
+                    response.message = $"{HttpStatusCode.OK} -  Has been Deleted";
                 }
                 catch (Exception ex)
                 {
@@ -204,8 +214,8 @@ namespace DataAccess
                     dbTrans.Rollback();
                     response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
                 }
-                return response;
             }
+            return response;
         }
     }
 }

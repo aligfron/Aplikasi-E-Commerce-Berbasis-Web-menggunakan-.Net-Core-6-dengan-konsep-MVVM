@@ -1,23 +1,36 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model VMTblMCategory?
+@model VMTblMProduct?
 @{
     Layout = null;
 }
 
 <div class="card">
-    <div class="card-header h3">@ViewBag.Title</div>
     <div class="card-body">
         @{
-            if(Model != null){
-                <div class="card-title row">
-                    <div class="col-4">Category Name</div>
-                    <div class="col-8">@Model.CategoryName</div>
+            if (Model != null)
+            {
+                <div class="card-header h3">@ViewBag.Title</div>
+                <div class="row">
+                    <div class="col-4">Product Name</div>
+                    <div class="col-8">@Model.Name</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Stock</div>
+                    <div class="col-8">@Model.Stock</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Price</div>
+                    <div class="col-8">@Model.Price</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Variant Name</div>
+                    <div class="col-8">@Model.VariantName</div>
                 </div>
                 <div class="row">
                     <div class="col-4">Category Name</div>
-                    <div class="col-8">@Model.Description</div>
+                    <div class="col-8">@Model.CategoryName</div>
                 </div>
                 <hr />
                 <div class="row">

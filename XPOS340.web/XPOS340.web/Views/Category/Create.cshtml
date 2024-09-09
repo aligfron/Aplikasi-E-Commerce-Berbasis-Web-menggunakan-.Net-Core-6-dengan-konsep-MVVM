@@ -1,38 +1,27 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model VMTblMCategory?
+
 @{
     Layout = null;
 }
 
 <div class="card">
-    <!-- Notifikasi sukses -->
-    <div id="alertSuccess" class="alert alert-success" role="alert" style="display:none;">
-        Kategori berhasil ditambahkan atau dirubah!
-    </div>
     <div class="card-body">
-        @{
-            if(Model != null){
-                    <form id="frmCategory" >
-                    <div class="card-title row">
-                        <div class="col-4">Category Name <span class="text-danger"> * </span></div>
-                        <div class="col-8"><input type="text" class="form-control" name="CategoryName" Value="@Model.CategoryName" /></div>
-                    </div>
-                    <div class="card-title row">
-                        <div class="col-4">Category Name</div>
-                        <div class="col-8"><input type="text" class="form-control" name="Description" Value="@Model.Description" /></div>
-                    </div>
-                        <input type="hidden" name="Id" value="@Model.Id" />
-                        <input type="hidden" name="UpdateBy" value="2" />
-                    </form>
-            }
-            else{
-                    <div class="card-title">
-                        Kategori Kosong
-                    </div>
-            }
-        }
+        <form id="frmCategory" >
+                            <div class="card-title row">
+                                <div class="col-4">Category Name <span class="text-danger"> * </span></div>
+                                <div class="col-8"><input type="text" class="form-control" name="CategoryName"  /></div>
+                            </div>
+                            <div class="card-title row">
+                                <div class="col-4">Description</div>
+                                <div class="col-8"><input type="text" class="form-control" name="Description" /></div>
+                            </div>
+                                <input type="hidden" name="CreateBy" value="2" />
+         </form>
+
+
+
         
     </div>
     <div class="card-footer d-flex justify-content-end">
@@ -42,6 +31,8 @@
     </div>
 </div>
 
+
+
 <script>
     $(document).ready(() => {
         $("#staticModalLabel").text("@ViewBag.Title");
@@ -50,13 +41,13 @@
             //console.log("#frmCategory isvalid?", $("#frmCategory").valid());
             if ($("#frmCategory").valid()) {
                 $.ajax({
-                    url: "/Category/Edit",
+                    url:"/Category/Create",
                     type: "post",
                     data: $("#frmCategory").serialize(),
                     dataType: "json",
                     //beforeSend: () => { },
                     success: function (response) {
-                        if (response.statusCode == 200) {
+                        if (response.statusCode == 200 || response.statusCode == 201) {
                             // Tampilkan alert sukses
                             $("#alertSuccess").show();
 
@@ -65,7 +56,7 @@
                                 location.reload();
                             }, 2000); // Tunggu 2 detik sebelum reload
                         } else {
-                            alert(response.statusCose + " - " + response.message)
+                            alert(response.statusCose+" - "+response.message)
                         }
                     },
                     error: function (errResponse) {
@@ -95,10 +86,11 @@
             },
             messages: {
                 CategoryName: {
-                    minlength: "Category Name must at least 3 characters long.",
+                    minlength:"Category Name must at least 3 characters long.",
                     maxlength: "Category Name must at least 100 characters long."
                 }
-            }
+            },
+            errorClass:"text-danger"
         });
         $("#btnReset").click(() => {
             $("#frmCategory")[0].reset();

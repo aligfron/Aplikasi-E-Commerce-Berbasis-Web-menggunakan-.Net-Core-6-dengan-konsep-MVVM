@@ -7,9 +7,15 @@
 <div class="h3 mb-3">
     @ViewBag.Title
 </div>
-
+<div id="alertDanger" class="alert alert-danger" role="alert" style="display:none;">
+    Kategori berhasil dihapus!
+</div>
+<!-- Notifikasi sukses -->
+<div id="alertSuccess" class="alert alert-success" role="alert" style="display:none;">
+    Kategori berhasil ditambahkan!
+</div>
 <div class="d-flex justify-content-between">
-    <button class="btn btn-success"><i class="fas fa-plus"></i></button>
+    <button id="btnAdd" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-plus"></i></button>
     <div class="input-group mx-5">
         <span class="input-group-text">Show </span>
         <input class="form-control" type="text" id="pageSize" name="PageZise" value="10" />
@@ -48,7 +54,7 @@
                                             <div class="btn-group" role="group">
                                     <button data-id="@category.Id" class="btn btn-info" title="Detail" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-list"></i></button>
                                     <button data-id="@category.Id" class="btn btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-edit"></i></button>
-                                    <button data-id="@category.Id" class="btn btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-trash-alt"></i></button>
+                                    <button data-id="@category.Id" class="btn btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-trash-alt"></i></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -77,6 +83,10 @@
     function detailClick(){
 
     }
+    $("#btnAdd").click(function (e) {
+        $("#staticModalBody").html("");
+        $("#staticModalBody").load("/Category/Create/");
+    });
     $(".btn-info").click(function (e) {
 
         //alert("Saya di Tekan (Id = " + $(this).data("id") + ")!");
@@ -90,6 +100,7 @@
         $("#staticModalBody").load("/Category/Edit/" + $(this).data("id"));
     });
     $(".btn-danger").click(function (e) {
-
+        $("#staticModalBody").html("");
+        $("#staticModalBody").load("/Category/Delete/" + $(this).data("id"));
     });
 </script>

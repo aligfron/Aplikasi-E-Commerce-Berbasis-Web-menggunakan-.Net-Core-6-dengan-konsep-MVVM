@@ -1,0 +1,129 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form id="frmProduct" >
+            <div class="card-title row">
+                <div class="col-4">Product Name <span class="text-danger"> * </span></div>
+                                <div class="col-8"><input type="text" class="form-control" name="Name"  /></div>
+                            </div>
+                            <div class="card-title row">
+                                <div class="col-4">Stock</div>
+                                <div class="col-8"><input type="number" class="form-control" name="Stock" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Price</div>
+                <div class="col-8"><input type="number" class="form-control" name="Price" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Category Name</div>
+                <select name="CategoryId" class="form-select">
+                    <option value="">--Pilih Kategori--</option>
+                    @if (ViewBag.Category != null)
+                    {
+                        foreach (VMTblMCategory category in ViewBag.Category)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Variant Name</div>
+                <select name="VariantId" class="form-select">
+                    <option value="">--Pilih Variant--</option>
+                    @if (ViewBag.Variant != null)
+                    {
+                        foreach (VMTblMVariant variant in ViewBag.Variant)
+                        {
+                            <option value="@variant.Id">@variant.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+           <input type="hidden" name="CreateBy" value="2" />
+         </form>
+
+
+
+        
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <button type="button" class="btn btn-success" id="btnSave">Save</button>
+        &nbsp;
+        <button type="reset" class="btn btn-primary" id="btnReset">Reset</button>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(() => {
+        $("#staticModalLabel").text("@ViewBag.Title");
+        $("#btnSave").click(function (e) {
+            //debugger
+            //console.log("#frmProduct isvalid?", $("#frmProduct").valid());
+            if ($("#frmProduct").valid()) {
+                $.ajax({
+                    url:"/Product/Create",
+                    type: "post",
+                    data: $("#frmProduct").serialize(),
+                    dataType: "json",
+                    //beforeSend: () => { },
+                    success: function (response) {
+                        if (response.statusCode == 200 || response.statusCode == 201) {
+                            // Tampilkan alert sukses
+                            $("#alertSuccess").show();
+
+                            // Reload halaman setelah beberapa detik
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000); // Tunggu 2 detik sebelum reload
+                        } else {
+                            alert(response.statusCose+" - "+response.message)
+                        }
+                    },
+                    error: function (errResponse) {
+                        console.error(errResponse);
+                    }
+                });
+            } else {
+                console.error("Category data is not valid");
+            }
+            return false;
+        });
+        $("#frmProduct").submit(function (e) {
+            //desable from submit function
+            e.preventDefault();
+
+
+
+
+        });
+        $("#frmProduct").validate({
+            rules: {
+                CategoryName: {
+                    required: true,
+                    maxlength: 100,
+                    minlength: 3
+                }
+            },
+            messages: {
+                CategoryName: {
+                    minlength:"Category Name must at least 3 characters long.",
+                    maxlength: "Category Name must at least 100 characters long."
+                }
+            },
+            errorClass:"text-danger"
+        });
+        $("#btnReset").click(() => {
+            $("#frmProduct")[0].reset();
+        });
+    });
+</script>

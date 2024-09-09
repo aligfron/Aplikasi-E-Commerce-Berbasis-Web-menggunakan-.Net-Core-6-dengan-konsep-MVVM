@@ -67,10 +67,11 @@ namespace DataAccess
                 {
                     response.data = (
 
-                        from c in db.TblMProducts
-                        where c.IsDeleted == false
-                        && (c.Id == id)
-                        select new VMTblMProduct(c)
+                         from c in db.TblMProducts
+                         join v in db.TblMVariants on c.VariantId equals v.Id
+                         join k in db.TblMCategories on v.CategoryId equals k.Id
+                         where c.IsDeleted == false
+                         select new VMTblMProduct(c, v, k)
                     ).FirstOrDefault();
 
                     if (response.data != null)

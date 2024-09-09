@@ -33,12 +33,32 @@ namespace XPOS340.web.Controllers
             return View(data);
         }
         [HttpPost]
-        public async Task<VMResponse<VMTblMCategory>> Edit(VMTblMCategory data)
+        public async Task<VMResponse<VMTblMCategory>?> EditAsync(VMTblMCategory data)
         {
-            VMResponse<VMTblMCategory> response = new VMResponse<VMTblMCategory>();
+            return (await category.UpdateAsync(data));
+        }
+        public IActionResult Create()
+        {
+            ViewBag.Title = "New Category";
 
-            response.data = data;
-            return response;
+            return View();
+        }
+        [HttpPost]
+        public async Task<VMResponse<VMTblMCategory>?> CreateAsync(VMTblMCategory data)
+        {
+            return (await category.CreateAsync(data));
+        }
+        public IActionResult Delete(int id)
+        {
+
+            ViewBag.Title = "New Category";
+
+            return View(id);
+        }
+        [HttpPost]
+        public async Task<VMResponse<VMTblMCategory>?> DeleteAsync(int id, int userId)
+        {
+            return (await category.DeleteAsync(id,userId));
         }
     }
 }

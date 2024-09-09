@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
+using System.Text;
 using XPOS240.ViewModel;
 
 namespace XPOS340.web.Models
@@ -9,6 +10,9 @@ namespace XPOS340.web.Models
         private readonly HttpClient httpClient = new HttpClient();
         private readonly string? apiurl;
         private VMResponse<List<VMTblMCategory>>? apiResponse;
+        private string jsonData;
+
+        HttpContent content;
 
         public CategoryModel(IConfiguration _config)
         {
@@ -78,7 +82,7 @@ namespace XPOS340.web.Models
             {
 
                 VMResponse<VMTblMCategory>? apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMCategory>>(await httpClient.GetStringAsync(apiurl + "Category/" + id));
-                  
+
 
 
                 if (apiResponse != null)
@@ -98,6 +102,103 @@ namespace XPOS340.web.Models
                 Console.WriteLine($"CategoryModel.GetById : {ex.Message}");
             }
             return dataCoba;
+        }
+
+        public async Task<VMResponse<VMTblMCategory>?> UpdateAsync(VMTblMCategory data)
+        {
+            VMResponse<VMTblMCategory>? apiResponse = new VMResponse<VMTblMCategory>();
+            try
+            {
+                //manggil api update proses
+                jsonData = JsonConvert.SerializeObject(data);
+                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMCategory>?>
+                    (await httpClient.PutAsync($"{apiurl}Category", content).Result.Content.ReadAsStringAsync());
+
+                if (apiResponse != null)
+                {
+                    if (apiResponse.statusCode != HttpStatusCode.OK)
+                    {
+
+                        throw new Exception(apiResponse.message);
+                    }
+                }
+                else
+                {
+                    throw new Exception("category api could not be reached");
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CategoryModel.GetbyId: {e.Message}");
+
+            }
+            return apiResponse;
+        }
+
+        public async Task<VMResponse<VMTblMCategory>?> CreateAsync(VMTblMCategory data)
+        {
+            VMResponse<VMTblMCategory>? apiResponse = new VMResponse<VMTblMCategory>();
+            try
+            {
+                jsonData = JsonConvert.SerializeObject(data);
+                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMCategory>?>(
+                    await httpClient.PostAsync($"{apiurl}Category", content).Result.Content.ReadAsStringAsync()
+                    );
+
+                if (apiResponse != null)
+                {
+                    if (apiResponse.statusCode != HttpStatusCode.Created)
+                    {
+                        throw new Exception(apiResponse.message);
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("category api could not be reached");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CategoryModel.GetbyId: {ex.Message}");
+            }
+            return apiResponse;
+        }
+        public async Task<VMResponse<VMTblMCategory>?> DeleteAsync(int id, int userId)
+        {
+            VMResponse<VMTblMCategory>? apiResponse = new VMResponse<VMTblMCategory>();
+            try
+            {
+
+                /*apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMCategory>?>(
+                    await httpClient.DeleteAsync($"{apiurl}Category/{id}/{userId}").Result.Content.ReadAsStringAsync()
+                    );*/
+                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMCategory>?>(
+                    await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()
+                    );
+
+                if (apiResponse != null)
+                {
+                    if (apiResponse.statusCode != HttpStatusCode.OK)
+                    {
+                        throw new Exception(apiResponse.message);
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("category api could not be reached");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CategoryModel.GetbyId: {ex.Message}");
+            }
+            return apiResponse;
         }
     }
 }

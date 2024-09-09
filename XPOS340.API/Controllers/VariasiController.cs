@@ -5,21 +5,23 @@ using XPOS240.ViewModel;
 
 namespace XPOS340.API.Controllers
 {
-    [Route("api/[controller]")]
+
     [ApiController]
-    public class CategoryController : ControllerBase
+    [Route("api/[controller]")]
+    public class VariasiController : ControllerBase
     {
-        public DACategory category;
-        public CategoryController(XPOS340Context _db) { 
-            category = new DACategory(_db);
+        public DAVariant variant;
+        public VariasiController(XPOS340Context _db)
+        {
+            variant = new DAVariant(_db);
         }
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
             try
             {
-                VMResponse<List<VMTblMCategory>> response = await Task.Run(() => category.GetByFilter(""));
-                if(response.data.Count > 0)
+                VMResponse<List<VMTblMVariant>> response = await Task.Run(() => variant.GetByFilter(""));
+                if (response.data.Count > 0)
                 {
                     return Ok(response);
                 }
@@ -28,11 +30,11 @@ namespace XPOS340.API.Controllers
                     Console.WriteLine(response.message);
                     return NoContent();
                 }
-                
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CategoryController.GetAll: "+ex.Message);
+                Console.WriteLine("CategoryController.GetAll: " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -41,8 +43,8 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return (filter != null) 
-                    ? Ok(await Task.Run(() => category.GetByFilter(filter))) 
+                return (filter != null)
+                    ? Ok(await Task.Run(() => variant.GetByFilter(filter)))
                     : BadRequest("Category name or description must be.... ");
             }
             catch (Exception ex)
@@ -56,7 +58,7 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                VMResponse<VMTblMCategory?> response = await Task.Run(() => category.GetById(id));
+                VMResponse<VMTblMVariant> response = await Task.Run(() => variant.GetById(id));
                 if (response.data != null)
                 {
                     return Ok(response);
@@ -66,7 +68,7 @@ namespace XPOS340.API.Controllers
                     Console.WriteLine(response.message);
                     return NoContent();
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -76,11 +78,11 @@ namespace XPOS340.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(VMTblMCategory data)
+        public async Task<ActionResult> Create(VMTblMVariant data)
         {
             try
             {
-                return Created("api/Category", await Task.Run(() => category.Create(data)));
+                return Created("api/Category", await Task.Run(() => variant.Create(data)));
             }
             catch (Exception ex)
             {
@@ -90,11 +92,11 @@ namespace XPOS340.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update(VMTblMCategory data)
+        public async Task<ActionResult> Update(VMTblMVariant data)
         {
             try
             {
-                VMResponse<VMTblMCategory?> response = await Task.Run(() => category.Update(data));
+                VMResponse<VMTblMVariant> response = await Task.Run(() => variant.update(data));
                 if (response.data != null)
                 {
                     return Ok(response);
@@ -104,8 +106,8 @@ namespace XPOS340.API.Controllers
                     Console.WriteLine(response.message);
                     return NoContent();
                 }
-            
-                
+
+
             }
             catch (Exception ex)
             {
@@ -113,17 +115,19 @@ namespace XPOS340.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete]
-        //[HttpDelete("{id?}/{userId?}")]
+
+        [HttpDelete("{id?}/{userId?}")]
         public async Task<ActionResult> Delete(int id, int userId)
         {
             try
             {
-                VMResponse<VMTblMCategory> response =  await Task.Run(() => category.Delete(id, userId));
-                if(response.data != null) { return Ok(response); }
-                else {
+                VMResponse<VMTblMVariant> response = await Task.Run(() => variant.delete(id, userId));
+                if (response.data != null) { return Ok(response); }
+                else
+                {
                     Console.WriteLine(response.message);
-                    return NoContent(); }
+                    return NoContent();
+                }
             }
             catch (Exception ex)
             {

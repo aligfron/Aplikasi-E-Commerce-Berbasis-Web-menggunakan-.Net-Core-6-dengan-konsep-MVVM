@@ -120,7 +120,9 @@ namespace XPOS340.API.Controllers
             try
             {
                 VMResponse<VMTblMVariant> response = await Task.Run(() => variant.delete(id, userId));
-                if (response.data != null) { return Ok(response); }
+                if (response.data != null) { 
+                    return Ok(response); 
+                }
                 else
                 {
                     Console.WriteLine(response.message);
