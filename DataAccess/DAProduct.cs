@@ -70,7 +70,7 @@ namespace DataAccess
                          from c in db.TblMProducts
                          join v in db.TblMVariants on c.VariantId equals v.Id
                          join k in db.TblMCategories on v.CategoryId equals k.Id
-                         where c.IsDeleted == false
+                         where c.IsDeleted == false && c.Id == id
                          select new VMTblMProduct(c, v, k)
                     ).FirstOrDefault();
 

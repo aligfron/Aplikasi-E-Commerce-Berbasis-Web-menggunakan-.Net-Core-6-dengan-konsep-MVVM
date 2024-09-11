@@ -47,6 +47,35 @@ namespace DataAccess
             }
             return response;
         }
+        public VMResponse<List<VMTblMVariant>> GetByCategory(int categoryId)
+        {
+            VMResponse<List<VMTblMVariant>> response = new VMResponse<List<VMTblMVariant>>();
+            try
+            {
+                response.data = (
+                    from v in db.TblMVariants
+                    join c in db.TblMCategories on v.CategoryId equals c.Id
+                    where v.IsDeleted == false && v.CategoryId == categoryId
+                    select new VMTblMVariant(v, c)
+                    ).ToList();
+                if (response.data != null && response.data.Count > 0)
+                {
+                    response.statusCode = HttpStatusCode.OK;
+                    response.message = $"{HttpStatusCode.OK} - Category Sukses Full";
+                }
+                else
+                {
+                    response.statusCode = HttpStatusCode.NoContent;
+                    response.message = $"{HttpStatusCode.NoContent} - Category does not exis";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
+            }
+            return response;
+        }
         public VMResponse<VMTblMVariant?> GetById(int id)
         {
             VMResponse<VMTblMVariant?> response = new VMResponse<VMTblMVariant?>();
@@ -88,13 +117,11 @@ namespace DataAccess
         public VMResponse<VMTblMVariant?> Create(VMTblMVariant data)
         {
             var response = new VMResponse<VMTblMVariant?>();
-            using (IDbContextTransaction dbtran = db.Database.BeginTransaction())
+            using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
             {
                 try
                 {
-                   if(kategori.GetById(data.CategoryId).data != null)
-                    {
-                        TblMVariant newData = new TblMVariant
+                    TblMVariant newData = new TblMVariant
                         {
 
                             CategoryId = data.CategoryId,
@@ -105,41 +132,32 @@ namespace DataAccess
                             IsDeleted = false 
                         };
 
-                        // Add the new entry to the database
-                        db.Add(newData);
-                        db.SaveChanges();
-                        dbtran.Commit();
 
-                        // Set the response data and message for a successful creation
-                        response.data = new VMTblMVariant(newData);
-                        response.statusCode = HttpStatusCode.Created;
-                        response.message = $"{HttpStatusCode.Created} - New Category successfully created.";
-                    }
-                    else
-                    {
-                        response.statusCode = HttpStatusCode.BadRequest;
-                        response.message = $"{HttpStatusCode.BadRequest} - New Category successfully created.";
+                    db.Add(newData);
+                    db.SaveChanges();
+                    dbTrans.Commit();
 
-                    }
+
+                    response.data = new VMTblMVariant(newData);
+                    response.statusCode = HttpStatusCode.Created;
+                    response.message = $"{HttpStatusCode.Created} - New Variant successfully created.";
                 }
-
                 catch (Exception ex)
                 {
-                    // Rollback the transaction in case of an error
-                    dbtran.Rollback();
+                    dbTrans.Rollback();
 
-                    // Set the response message and status code for an error
+
                     response.data = null;
                     response.statusCode = HttpStatusCode.InternalServerError;
                     response.message = $"{HttpStatusCode.InternalServerError} - {ex.Message}";
                 }
             }
-                return response;
-            
-         }
+
+            return response;
+        }
         public VMResponse<VMTblMVariant> update(VMTblMVariant data)
         {
-            VMResponse<VMTblMVariant> response = new VMResponse<VMTblMVariant>();
+            var response = new VMResponse<VMTblMVariant>();
             using (IDbContextTransaction dbTrans = db.Database.BeginTransaction())
                 try
                 {

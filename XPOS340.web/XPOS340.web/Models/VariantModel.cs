@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using XPOS240.ViewModel;
@@ -15,7 +16,7 @@ namespace XPOS340.web.Models
         HttpContent content;
         public VariantModel(IConfiguration _config)
         {
-            apiurl = $"{_config["ApiUrl"]}Variant";
+            apiurl = _config["ApiUrl"];
         }
 
         public async Task<List<VMTblMVariant>?> GetByFilter(string? filter)
@@ -26,7 +27,7 @@ namespace XPOS340.web.Models
             {
                 VMResponse<List<VMTblMVariant>>? response = JsonConvert.DeserializeObject<VMResponse<List<VMTblMVariant>>?>(
                         await httpClient.GetStringAsync(
-                                (string.IsNullOrEmpty(filter)) ? $"{apiurl}" : $"{apiurl}/GetBy/{filter}"
+                                (string.IsNullOrEmpty(filter)) ? $"{apiurl}Variant" : $"{apiurl}Variant/GetBy/{filter}"
                             )
                     );
 
@@ -83,6 +84,29 @@ namespace XPOS340.web.Models
             }
             return dataCoba;
         }
+        public async Task<VMResponse<List<VMTblMVariant>>?> getByCategory(int categoryId)
+        {
+            try
+            {
+                VMResponse<List<VMTblMVariant>>? apiResponse = JsonConvert.DeserializeObject<VMResponse<List<VMTblMVariant>>?>
+                    (await httpClient.GetStringAsync($"{apiurl}Variant/GetByCategory/{categoryId}"));
+
+                if (apiResponse != null && apiResponse.statusCode == HttpStatusCode.OK)
+                {
+                    return apiResponse;
+                }
+                else
+                {
+                    throw new Exception(apiResponse.message);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Eror{ex.Message}");
+                throw;
+            }
+        }
+
 
         public async Task<VMResponse<VMTblMVariant>?> CreateAsync(VMTblMVariant data)
         {
@@ -115,7 +139,38 @@ namespace XPOS340.web.Models
             }
             return apiResponse;
         }
+        public async Task<VMResponse<VMTblMVariant>?> UpdateAsync(VMTblMVariant data)
+        {
+            VMResponse<VMTblMVariant>? apiResponse = new VMResponse<VMTblMVariant>();
+            try
+            {
+                //manggil api update proses
+                jsonData = JsonConvert.SerializeObject(data);
+                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMVariant>?>
+                    (await httpClient.PutAsync($"{apiurl}Variant", content).Result.Content.ReadAsStringAsync());
 
+                if (apiResponse != null)
+                {
+                    if (apiResponse.statusCode != HttpStatusCode.OK)
+                    {
+
+                        throw new Exception(apiResponse.message);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Variant api could not be reached");
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"VariantModel.GetbyId: {e.Message}");
+
+            }
+            return apiResponse;
+        }
 
         public async Task<VMResponse<VMTblMVariant>?> DeleteAsync(int id, int userid)
         {

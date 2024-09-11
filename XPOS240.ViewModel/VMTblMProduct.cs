@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace XPOS240.ViewModel
 
         public string? CategoryName { get; set; }
         public string? Image { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public bool IsDeleted { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }

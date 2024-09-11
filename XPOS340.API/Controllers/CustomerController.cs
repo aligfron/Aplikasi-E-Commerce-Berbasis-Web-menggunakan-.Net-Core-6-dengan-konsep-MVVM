@@ -81,7 +81,7 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Created("api/Variant", await Task.Run(() => customer.Create(data)));
+                return Created("api/Customer", await Task.Run(() => customer.Create(data)));
             }
             catch (Exception ex)
             {

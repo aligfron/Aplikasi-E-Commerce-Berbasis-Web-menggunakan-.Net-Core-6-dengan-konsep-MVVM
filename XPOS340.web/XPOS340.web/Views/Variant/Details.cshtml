@@ -11,7 +11,6 @@
         @{
             if (Model != null)
             {
-                <div class="card-header h3">@ViewBag.Title</div>
                 <div class="card-title row">
                     <div class="col-4">Category Name</div>
                     <div class="col-8">@Model.CategoryName</div>
@@ -42,3 +41,6 @@
         
     </div>
 </div>
+<script>
+    $("#staticModalLgLabel").text("@ViewBag.Title");
+</script>

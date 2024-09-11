@@ -1,7 +1,7 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-
+@model VMTblMVariant?
 @{
     Layout = null;
 }
@@ -13,30 +13,36 @@
             <div class="card-title row">
                 <div class="col-4">Category Name</div>
                 <select name="CategoryId" class="form-select">
-                    <option value="">--Pilih Kategori--</option>
+                    <option value="">--Select Category--</option>
                     @if (ViewBag.Category != null)
                     {
                         foreach (VMTblMCategory category in ViewBag.Category)
                         {
+                            if (category.Id == @Model.CategoryId)
+                            {
+                                <option value="@category.Id" selected>@category.CategoryName</option>
+                            }else{
                             <option value="@category.Id">@category.CategoryName</option>
+                            }
                         }
                     }
                 </select>
             </div>
-                            <div class="card-title row">
-                                <div class="col-4">Variant Name <span class="text-danger"> * </span></div>
-                                <div class="col-8"><input type="text" class="form-control" name="Name"  /></div>
-                            </div>
-                            <div class="card-title row">
-                                <div class="col-4">Description</div>
-                                <div class="col-8"><input type="text" class="form-control" name="Description" /></div>
-                            </div>
-                                <input type="hidden" name="CreateBy" value="2" />
-         </form>
+            <div class="card-title row">
+                <div class="col-4">Variant Name <span class="text-danger"> * </span></div>
+                <div class="col-8"><input type="text" class="form-control" name="Name" value="@Model.Name" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Description</div>
+                <div class="col-8"><input type="text" class="form-control" name="Description" value="@Model.Description" /></div>
+            </div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="UpdateBy" value="@Model.CreateBy" />
+        </form>
 
 
 
-        
+
     </div>
     <div class="card-footer d-flex justify-content-end">
         <button type="button" class="btn btn-success" id="btnSave">Save</button>
@@ -55,7 +61,7 @@
             //console.log("#frmVariant isvalid?", $("#frmVariant").valid());
             if ($("#frmVariant").valid()) {
                 $.ajax({
-                    url:"/Variant/Create",
+                    url: "/Variant/Edit",
                     type: "post",
                     data: $("#frmVariant").serialize(),
                     dataType: "json",
@@ -66,14 +72,14 @@
                             // Tampilkan alert sukses
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Data Berhasil Di Tambah',
+                                title: 'Data Berhasil Di Edit',
                                 showConfirmButton: false,
                                 timer: 3000 // Show the alert for 2 seconds
                             }).then(() => {
                                 location.reload(); // Reload page after alert
                             });
                         } else {
-                            alert(response.statusCose+" - "+response.message)
+                            alert(response.statusCose + " - " + response.message)
                         }
                     },
                     error: function (errResponse) {
@@ -106,7 +112,7 @@
             },
             messages: {
                 Name: {
-                    minlength:"Category Name must at least 3 characters long.",
+                    minlength: "Category Name must at least 3 characters long.",
                     maxlength: "Category Name must at least 100 characters long."
                 }
             }

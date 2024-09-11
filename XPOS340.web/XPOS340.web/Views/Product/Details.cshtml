@@ -11,7 +11,9 @@
         @{
             if (Model != null)
             {
-                <div class="card-header h3">@ViewBag.Title</div>
+                <div class="card-title row justify-content-center">
+                    <img class=" justify-content-center img-thumbnail img-fluid rounded" style="height: 180px; width: 180px;" src="~/@ViewBag.imgFolder/@(Model?.Image ?? "image-empty.png")" />
+                </div>
                 <div class="row">
                     <div class="col-4">Product Name</div>
                     <div class="col-8">@Model.Name</div>
@@ -50,3 +52,6 @@
         
     </div>
 </div>
+<script>
+                    $("#staticModalLgLabel").text("@ViewBag.Title");
+</script>

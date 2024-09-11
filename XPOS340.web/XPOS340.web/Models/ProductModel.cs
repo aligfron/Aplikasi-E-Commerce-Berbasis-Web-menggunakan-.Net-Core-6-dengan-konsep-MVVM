@@ -10,13 +10,33 @@ namespace XPOS340.web.Models
         private readonly HttpClient httpClient = new HttpClient();
         private readonly string? apiurl;
         private VMResponse<List<VMTblMProduct>>? apiResponse;
+        private readonly IWebHostEnvironment webHostEnv;
+        private readonly string imageFolder;
         private string jsonData;
-
         HttpContent content;
 
-        public ProductModel(IConfiguration _config)
+
+
+        public ProductModel(IConfiguration _config, IWebHostEnvironment _webHostEnv)
         {
             apiurl = _config["ApiUrl"];
+            webHostEnv = _webHostEnv;
+            imageFolder = _config["ImageFolder"];
+        }
+        private string UploadFile(IFormFile? imageFile)
+        {
+            string uniqueFileName = string.Empty;
+            if (imageFile != null)
+            {
+                uniqueFileName = $"{Guid.NewGuid()}-{imageFile.FileName}";
+                using (FileStream fileStream = new FileStream(
+                    $"{webHostEnv.WebRootPath}\\{imageFolder}\\{uniqueFileName}", FileMode.CreateNew
+                    ))
+                {
+                    imageFile.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
 
         public async Task<List<VMTblMProduct>>? getByFilter(string? filter)
@@ -53,7 +73,8 @@ namespace XPOS340.web.Models
             try
             {
 
-                VMResponse<VMTblMProduct>? apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>>(await httpClient.GetStringAsync(apiurl + "Product/" + id));
+                VMResponse<VMTblMProduct>? apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>>
+                    (await httpClient.GetStringAsync(apiurl + "Product/" + id));
 
 
 
@@ -80,6 +101,14 @@ namespace XPOS340.web.Models
             VMResponse<VMTblMProduct>? apiResponse = new VMResponse<VMTblMProduct>();
             try
             {
+                //file upload
+                if (data.ImageFile != null)
+                {
+                    data.Image = UploadFile(data.ImageFile);
+                    data.ImageFile = null;
+                }
+
+
                 jsonData = JsonConvert.SerializeObject(data);
                 content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
@@ -107,7 +136,25 @@ namespace XPOS340.web.Models
             return apiResponse;
         }
 
+        public bool DeleteOldImage(string oldImageFileName)
+        {
+            try
+            {
+                oldImageFileName = $"{webHostEnv.WebRootPath}\\{imageFolder}\\{oldImageFileName}";
+                if (File.Exists(oldImageFileName))
+                {
+                    File.Delete(oldImageFileName);
+                }
+                else
+                {
+                    throw new ArgumentException("Product Api could");
+                }
+            }catch(Exception e)
+            {
 
+            }
+            return true;
+        }
 
         public async Task<VMResponse<VMTblMProduct>?> DeleteAsync(int id, int userId)
         {
@@ -117,6 +164,50 @@ namespace XPOS340.web.Models
 
                 apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
                     await httpClient.DeleteAsync($"{apiurl}Product/{id}/{userId}").Result.Content.ReadAsStringAsync()
+                    );
+                /* apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                     await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()
+                     );*/
+
+                if (apiResponse != null)
+                {
+                    if (apiResponse.statusCode != HttpStatusCode.OK)
+                    {
+                        throw new Exception(apiResponse.message);
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("variant api could not be reached");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"VariantModel.GetbyId: {ex.Message}");
+            }
+            return apiResponse;
+        }
+
+        internal async Task<VMResponse<VMTblMProduct>> UpdateAsync(VMTblMProduct data)
+        {
+            VMResponse<VMTblMProduct>? apiResponse = new VMResponse<VMTblMProduct>();
+            try
+            {
+                if (data.ImageFile != null)
+                {
+                    if(data.Image != null)
+                    {
+
+                    }
+                    data.Image = UploadFile(data.ImageFile);
+                    data.ImageFile = null;
+                }
+                //manggil api update proses
+                jsonData = JsonConvert.SerializeObject(data);
+                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                    await httpClient.PutAsync($"{apiurl}Product", content).Result.Content.ReadAsStringAsync()
                     );
                 /* apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
                      await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()

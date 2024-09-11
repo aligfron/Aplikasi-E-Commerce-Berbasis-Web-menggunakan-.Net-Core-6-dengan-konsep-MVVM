@@ -15,7 +15,7 @@
     Kategori berhasil ditambahkan!
 </div>
 <div class="d-flex justify-content-between">
-    <button id="btnAdd" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-plus"></i></button>
+    <button id="btnAdd" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-plus"></i></button>
     <div class="input-group mx-5">
         <span class="input-group-text">Show </span>
         <input class="form-control" type="text" id="pageSize" name="PageZise" value="10" />
@@ -35,51 +35,58 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th class="col-2">Image</th>
-                <th class="col-1">ID</th>
-                <th class="col-2">Name</th>
-                <th class="col-1">Price</th>
-                <th class="col-1">Stok</th>
-                <th class="col-2">Variant Name</th>
-                <th class="col-2">Category Price</th>
-                <th class="col-3">Action</th>
+                <th class="col-2 text-center align-middle">Image</th>
+                <th class="col-1 text-center align-middle">ID</th>
+                <th class="col-2 text-center align-middle">Name</th>
+                <th class="col-2 text-center align-middle">Price</th>
+                <th class="col-1 text-center align-middle">Stok</th>
+                <th class="col-1 text-center align-middle">Variant Name</th>
+                <th class="col-2 text-center align-middle">Category Name</th>
+                <th class="col-3 text-center align-middle">Action</th>
+
             </tr>
         </thead>
         <tbody>
+            @{
+                int no = 1;
+            }
+
             @{
                 if (Model != null)
                 {
                     foreach (VMTblMProduct product in Model)
                     {
                         <tr>
-                            <td>@product.Image</td>
-                            <td>@product.Id</td>
-                            <td>@product.Name</td>
-                            <td>@product.Price</td>
-                            <td>@product.Stock</td>
-                            <td>@product.VariantName</td>
-                            <td>@product.CategoryName</td>
-                            <td>
+                            <td class="text-center align-middle">
+                                <img class="img-thumbnail img-fluid rounded" src="~/@ViewBag.imgFolder/@(product.Image ?? "image-empty.png")" style="width: 80px; height: 80px;" />
+                            </td>
+                            <td class="text-center align-middle">@no</td>
+                            <td class="text-center align-middle">@product.Name</td>
+                            <td class="text-center align-middle">Rp. @product.Price?.ToString("N0")</td>
+                            <td class="text-center align-middle">@product.Stock</td>
+                            <td class="text-center align-middle">@product.VariantName</td>
+                            <td class="text-center align-middle">@product.CategoryName</td>
+                            <td class="text-center align-middle">
                                 <div class="btn-group" role="group">
-                                    <button data-id="@product.Id" class="btn btn-info" title="Detail" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-list"></i></button>
-                                    <button data-id="@product.Id" class="btn btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-edit"></i></button>
+                                    <button data-id="@product.Id" class="btn btn-info" title="Detail" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-list"></i></button>
+                                    <button data-id="@product.Id" class="btn btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-edit"></i></button>
                                     <button data-id="@product.Id" class="btn btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </td>
                         </tr>
+                        no++;
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center">Data Belum Ada</td>
+                        <td colspan="8" class="text-center align-middle">Data Belum Ada</td>
                     </tr>
                 }
             }
-
         </tbody>
-
     </table>
+
 </div>
 
 <div class="row">
@@ -94,20 +101,20 @@
 
     }
     $("#btnAdd").click(function (e) {
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Product/Create/");
+        $("#staticModalLgBody").html("");
+        $("#staticModalLgBody").load("/Product/Create/");
     });
     $(".btn-info").click(function (e) {
 
         //alert("Saya di Tekan (Id = " + $(this).data("id") + ")!");
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Product/Details/" + $(this).data("id"));
+        $("#staticModalLgBody").html("");
+        $("#staticModalLgBody").load("/Product/Details/" + $(this).data("id"));
         //location.href="/Category/Details/" + $(this).data("id");
     });
 
     $(".btn-primary").click(function (e) {
-        $("#staticModalBody").html("");
-        $("#staticModalBody").load("/Product/Edit/" + $(this).data("id"));
+        $("#staticModalLgBody").html("");
+        $("#staticModalLgBody").load("/Product/Edit/" + $(this).data("id"));
     });
     $(".btn-danger").click(function (e) {
         $("#staticModalBody").html("");

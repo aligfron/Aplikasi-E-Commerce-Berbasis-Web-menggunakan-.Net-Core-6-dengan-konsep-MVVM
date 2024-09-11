@@ -80,7 +80,7 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Created("api/Category", await Task.Run(() => order.Create(data)));
+                return Created("api/Order", await Task.Run(() => order.Create(data)));
             }
             catch (Exception ex)
             {

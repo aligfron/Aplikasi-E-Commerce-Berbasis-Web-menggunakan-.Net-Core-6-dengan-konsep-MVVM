@@ -44,7 +44,19 @@ namespace XPOS340.web.Controllers
         {
             return (await variant.CreateAsync(data));
         }
+        public async Task<IActionResult> Edit(int id)
+        {
+            VMTblMVariant? data = await variant.getById(id);
+            ViewBag.Category = await category.getByFilter("");
 
+            ViewBag.Title = "Variant Edit";
+            return View(data);
+        }
+        [HttpPost]
+        public async Task<VMResponse<VMTblMVariant>?> EditAsync(VMTblMVariant data)
+        {
+            return (await variant.UpdateAsync(data));
+        }
         public IActionResult Delete(int id)
         {
 

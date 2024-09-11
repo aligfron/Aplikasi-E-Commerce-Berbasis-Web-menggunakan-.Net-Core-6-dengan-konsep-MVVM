@@ -1,0 +1,239 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMTblMProduct?
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-title row justify-content-center">
+            <img class=" justify-content-center img-thumbnail img-fluid rounded" style="height: 180px; width: 180px;" src="~/@ViewBag.imgFolder/@(Model?.Image ?? "image-empty.png")" />
+        </div>
+        <br />
+        <form id="frmProduct" >
+            <div class="card-title row">
+                <div class="col-4">Image<span class="text-danger"> * </span></div>
+                <div class="col-8">
+                    <input type="file" class="form-control" name="ImageFile" id="inputGroupFile02" accept=".png, .jpg, .jpeg" value="@Model.Image" />
+                </div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Product Name <span class="text-danger"> * </span></div>
+                                <div class="col-8"><input type="text" class="form-control" name="Name" value="@Model.Name" /></div>
+                            </div>
+                            <div class="card-title row">
+                                <div class="col-4">Stock</div>
+                                <div class="col-8"><input type="number" class="form-control" name="Stock" value="@Model.Stock" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Price</div>
+                <div class="col-8"><input type="number" class="form-control" name="Price"  value="@Model.Price"/></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Category Name</div>
+                <div class="col-8">
+                <select id="category-id" name="CategoryId" class="form-select">
+                    <option value="">--Pilih Kategori--</option>
+                    @if (ViewBag.Category != null)
+                    {
+                        foreach (VMTblMCategory category in ViewBag.Category)
+                        {
+                            if (@category.Id == @Model.CategoryId){
+
+                                <option value="@category.Id" selected>@category.CategoryName</option>
+                            }else{
+
+                                <option value="@category.Id">@category.CategoryName</option>
+                            }
+                        }
+                    }
+                </select>
+                </div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Variant Name</div>
+                <div class="col-8">
+                    <select id="variant-id" name="VariantId" class="form-select">
+                    <option value="">--Pilih Variant--</option>
+                </select>
+                </div>
+            </div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+           <input type="hidden" name="UpdateBy" value="@Model.CreateBy" />
+         </form>
+
+
+
+        
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <button type="button" class="btn btn-success" id="btnSave">Save</button>
+        &nbsp;
+        <button type="reset" class="btn btn-primary" id="btnReset">Reset</button>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        var categoryId = @Model.CategoryId; // ID Kategori yang ingin Anda ambil variannya, ini bisa dinamis
+
+        $.ajax({
+            url: "/Product/GetVariantByCategory",// Memanggil URL controller
+            type: 'GET',
+            data: { categoryId: categoryId },
+            dataType: 'json',
+            success: function (res) {
+                var variantSelect = $('#variant-id');
+                variantSelect.empty(); // Kosongkan dropdown sebelum mengisi data
+                variantSelect.append('<option value="">-- Pilih Variant --</option>');
+
+                // Jika ada data, tambahkan opsi untuk setiap item
+                if (res.statusCode === 200 && res.data.length > 0) {
+                    $.each(res.data, function (index, data) {
+                        if (data.id == @Model.VariantId) {
+                            $("#variant-id").append(
+                                `<option value="${data.id}" selected>${data.name}</option>`
+                            );
+                        } else {
+                            $("#variant-id").append(
+                                `<option value="${data.id}">${data.name}</option>`
+                            );
+                        }
+                    });
+                    
+                } else {
+                    // Jika tidak ada data, tampilkan opsi kosong
+                    variantSelect.append('<option value="">Data kosong</option>');
+                }
+            },
+            error: function () {
+                alert("Terjadi kesalahan saat mengambil data varian.");
+            }
+        });
+    });
+</script>
+
+<script>
+
+$(document).ready(() => {
+    $("#category-id").change(function (e) {
+        let categoryId = $(this).val();
+
+        $.ajax({
+            url: "/Product/GetVariantByCategory",
+            data: {
+                categoryId: categoryId
+            },
+            dataType: "json",
+            beforeSend: () => { },
+            success: function (res) {
+                $("#variant-id").empty(); // Kosongkan dropdown sebelum mengisi data
+
+                if (res.statusCode == 200) {
+                    if (res.data && res.data.length > 0) {
+                        // Jika ada data, tambahkan opsi untuk setiap item
+                        $.each(res.data, function (index, data) {
+                                if (data.id == @Model.VariantId) {
+                                    $("#variant-id").append(
+                                        `<option value="${data.id}" selected>${data.name}</option>`
+                                    );
+                                } else {
+                                    $("#variant-id").append(
+                                        `<option value="${data.id}">${data.name}</option>`
+                                    );
+                                }
+                        });
+                    } else {
+                        // Jika tidak ada data tetapi statusCode 200, tampilkan opsi kosong
+                        $("#variant-id").append(
+                            `<option value="">Data kosong</option>`
+                        );
+                    }
+                } else if (res.statusCode == 204) {
+                    // Jika statusCode 204, tampilkan opsi kosong
+                    $("#variant-id").append(
+                        `<option value="">Variant kosong</option>`
+                    );
+                } else {
+                    // Jika statusCode lain, tampilkan pesan error
+                    alert(res.message || "Terjadi kesalahan");
+                }
+            },
+            error: function (errRes) {
+                // Tangani error
+                $("#variant-id").empty();
+                $("#variant-id").append(
+                    `<option value="">Variant kosong</option>`
+                );
+            }
+        });
+    });
+
+
+
+        $("#staticModalLgLabel").text("@ViewBag.Title");
+        $("#btnSave").click(function (e) {
+            //debugger
+            //console.log("#frmProduct isvalid?", $("#frmProduct").valid());
+            if ($("#frmProduct").valid()) {
+                $.ajax({
+                    url:"/Product/Edit",
+                    type: "post",
+                    data: $("#frmProduct").serialize(),
+                    dataType: "json",
+                    //beforeSend: () => { },
+                    success: function (response) {
+                        if (response.statusCode == 200 || response.statusCode == 201) {
+                            // Tampilkan alert sukses
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Berhasil Di Edit',
+                                showConfirmButton: false,
+                                timer: 3000 // Show the alert for 2 seconds
+                            }).then(() => {
+                                location.reload(); // Reload page after alert
+                            });
+                        } else {
+                            alert(response.statusCose+" - "+response.message)
+                        }
+                    },
+                    error: function (errResponse) {
+                        console.error(errResponse);
+                    }
+                });
+            } else {
+                console.error("Category data is not valid");
+            }
+            return false;
+        });
+        $("#frmProduct").submit(function (e) {
+            //desable from submit function
+            e.preventDefault();
+
+
+
+
+        });
+        $("#frmProduct").validate({
+            rules: {
+                CategoryName: {
+                    required: true,
+                    maxlength: 100,
+                    minlength: 3
+                }
+            },
+            messages: {
+                CategoryName: {
+                    minlength:"Category Name must at least 3 characters long.",
+                    maxlength: "Category Name must at least 100 characters long."
+                }
+            },
+            errorClass:"text-danger"
+        });
+        $("#btnReset").click(() => {
+            $("#frmProduct")[0].reset();
+        });
+    });
+</script>

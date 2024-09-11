@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using XPOS340.DataModel;
-using DataAccess;
 using XPOS240.ViewModel;
+using DataAccess;
 
 namespace XPOS340.API.Controllers
 {
@@ -34,7 +34,7 @@ namespace XPOS340.API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CategoryController.GetAll: " + ex.Message);
+                Console.WriteLine("VariantController.GetAll: " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -45,7 +45,7 @@ namespace XPOS340.API.Controllers
             {
                 return (filter != null)
                     ? Ok(await Task.Run(() => variant.GetByFilter(filter)))
-                    : BadRequest("Category name or description must be.... ");
+                    : BadRequest("Variant name or description must be.... ");
             }
             catch (Exception ex)
             {
@@ -72,7 +72,7 @@ namespace XPOS340.API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CategoryController.GetByID " + ex.Message);
+                Console.WriteLine("VariantController.GetByID " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -82,11 +82,11 @@ namespace XPOS340.API.Controllers
         {
             try
             {
-                return Created("api/Category", await Task.Run(() => variant.Create(data)));
+                return Created("api/Variasi", await Task.Run(() => variant.Create(data)));
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CategoryController.Create " + ex.Message);
+                Console.WriteLine("VariantController.Create " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -111,7 +111,7 @@ namespace XPOS340.API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CategoryController.Update " + ex.Message);
+                Console.WriteLine("VariantController.Update " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -131,7 +131,7 @@ namespace XPOS340.API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CategoryController.Delete " + ex.Message);
+                Console.WriteLine("VariantController.Delete " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }

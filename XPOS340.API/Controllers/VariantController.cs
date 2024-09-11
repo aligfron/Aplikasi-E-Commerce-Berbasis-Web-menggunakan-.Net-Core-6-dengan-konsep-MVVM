@@ -75,6 +75,21 @@ namespace XPOS340.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("[action]/{categoryId?}")]
+        public async Task<ActionResult> GetByCategory(int categoryId)
+        {
+            try
+            {
+                return (categoryId > 0)
+                    ? Ok(await Task.Run(() => variant.GetByCategory(categoryId)))
+                    : BadRequest("Category name or description must be.... ");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost]
         public async Task<ActionResult> Create(VMTblMVariant data)
         {

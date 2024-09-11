@@ -7,7 +7,6 @@
 }
 
 <div class="card">
-    <div class="card-header h3">@ViewBag.Title</div>
     <div class="card-body">
         @{
             if(Model != null){
@@ -37,3 +36,6 @@
         
     </div>
 </div>
+<script>
+    $("#staticModalLgLabel").text("@ViewBag.Title");
+</script>

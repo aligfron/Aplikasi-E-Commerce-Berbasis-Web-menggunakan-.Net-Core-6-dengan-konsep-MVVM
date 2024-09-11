@@ -8,7 +8,13 @@
 
 <div class="card">
     <div class="card-body">
-        <form id="frmProduct" >
+        <form id="productAdd" enctype="multipart/form-data">
+            <div class="card-title row">
+                <div class="col-4">Image<span class="text-danger"> * </span></div>
+                <div class="col-8">
+                    <input type="file" class="form-control" name="ImageFile" id="inputGroupFile02" accept=".png, .jpg, .jpeg" placeholder="Product Image"/>
+                </div>
+            </div>
             <div class="card-title row">
                 <div class="col-4">Product Name <span class="text-danger"> * </span></div>
                                 <div class="col-8"><input type="text" class="form-control" name="Name"  /></div>
@@ -23,7 +29,7 @@
             </div>
             <div class="card-title row">
                 <div class="col-4">Category Name</div>
-                <select name="CategoryId" class="form-select">
+                <select id="category-id" name="CategoryId" class="form-select">
                     <option value="">--Pilih Kategori--</option>
                     @if (ViewBag.Category != null)
                     {
@@ -36,15 +42,9 @@
             </div>
             <div class="card-title row">
                 <div class="col-4">Variant Name</div>
-                <select name="VariantId" class="form-select">
+                <select id="variant-id" name="VariantId" class="form-select">
                     <option value="">--Pilih Variant--</option>
-                    @if (ViewBag.Variant != null)
-                    {
-                        foreach (VMTblMVariant variant in ViewBag.Variant)
-                        {
-                            <option value="@variant.Id">@variant.Name</option>
-                        }
-                    }
+                    
                 </select>
             </div>
            <input type="hidden" name="CreateBy" value="2" />
@@ -62,68 +62,107 @@
 </div>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).ready(() => {
-        $("#staticModalLabel").text("@ViewBag.Title");
-        $("#btnSave").click(function (e) {
-            //debugger
-            //console.log("#frmProduct isvalid?", $("#frmProduct").valid());
-            if ($("#frmProduct").valid()) {
-                $.ajax({
-                    url:"/Product/Create",
-                    type: "post",
-                    data: $("#frmProduct").serialize(),
-                    dataType: "json",
-                    //beforeSend: () => { },
-                    success: function (response) {
-                        if (response.statusCode == 200 || response.statusCode == 201) {
-                            // Tampilkan alert sukses
-                            $("#alertSuccess").show();
+    $("#staticModalLgLabel").text("@ViewBag.Title");
+    $("#category-id").change(function (e) {
+        let categoryId = $(this).val();
 
-                            // Reload halaman setelah beberapa detik
-                            setTimeout(() => {
-                                location.reload();
-                            }, 2000); // Tunggu 2 detik sebelum reload
-                        } else {
-                            alert(response.statusCose+" - "+response.message)
-                        }
-                    },
-                    error: function (errResponse) {
-                        console.error(errResponse);
+        $.ajax({
+            url: "/Product/GetVariantByCategory",
+            data: {
+                categoryId: categoryId
+            },
+            dataType: "json",
+            beforeSend: () => { },
+            success: function (res) {
+                $("#variant-id").empty(); // Kosongkan dropdown sebelum mengisi data
+
+                if (res.statusCode == 200) {
+                    if (res.data && res.data.length > 0) {
+                        // Jika ada data, tambahkan opsi untuk setiap item
+                        $.each(res.data, function (index, data) {
+                            $("#variant-id").append(
+                                `<option value="${data.id}">${data.name}</option>`
+                            );
+                        });
+                    } else {
+                        // Jika tidak ada data tetapi statusCode 200, tampilkan opsi kosong
+                        $("#variant-id").append(
+                            `<option value="">Data kosong</option>`
+                        );
                     }
-                });
-            } else {
-                console.error("Category data is not valid");
+                } else if (res.statusCode == 204) {
+                    // Jika statusCode 204, tampilkan opsi kosong
+                    $("#variant-id").append(
+                        `<option value="">Variant kosong</option>`
+                    );
+                } else {
+                    // Jika statusCode lain, tampilkan pesan error
+                    alert(res.message || "Terjadi kesalahan");
+                }
+            },
+            error: function (errRes) {
+                // Tangani error
+                $("#variant-id").empty();
+                $("#variant-id").append(
+                    `<option value="">Variant kosong</option>`
+                );
             }
-            return false;
-        });
-        $("#frmProduct").submit(function (e) {
-            //desable from submit function
-            e.preventDefault();
-
-
-
-
-        });
-        $("#frmProduct").validate({
-            rules: {
-                CategoryName: {
-                    required: true,
-                    maxlength: 100,
-                    minlength: 3
-                }
-            },
-            messages: {
-                CategoryName: {
-                    minlength:"Category Name must at least 3 characters long.",
-                    maxlength: "Category Name must at least 100 characters long."
-                }
-            },
-            errorClass:"text-danger"
-        });
-        $("#btnReset").click(() => {
-            $("#frmProduct")[0].reset();
         });
     });
+
+
+
+    $("#productAdd").validate({
+        rules: {
+            Name: {
+                required: true,
+                maxlength: 100,
+                minlength: 3
+            },
+            CategoryId: "required",
+            VariantId: "required",
+            Price: {
+                min: 0,
+            },
+            Stock: {
+                min: 0,
+            }
+        }
+    })
+
+    $("#btnSave").click((e) => $("#productAdd").submit())
+
+    $("#productAdd").submit(function (e) {
+        e.preventDefault()
+        let formData = new FormData($("#productAdd")[0])
+        console.log("formData", formData);
+        if ($(this).valid()) {
+            $.ajax({
+                url: "/Product/Create",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: () => { },
+                success: function (res) {
+                    if (res.statusCode == 201 || res.statusCode == 200) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Berhasil Di Tambah',
+                            showConfirmButton: false,
+                            timer: 3000 // Show the alert for 2 seconds
+                        }).then(() => {
+                            location.reload(); // Reload page after alert
+                        });
+                    }
+                },
+                error: function (errRes) {
+                    console.error(errRes)
+                    debugger
+                }
+            })
+        } else { return false }
+    })
 </script>
