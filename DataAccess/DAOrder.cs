@@ -273,7 +273,7 @@ namespace DataAccess
                         existingHeader.IsCheckout = newData.IsCheckout;
                         existingHeader.UpdateBy = newData.UpdateBy;
                         existingHeader.UpdateDate = DateTime.Now;
-
+                        existingHeader.IsDeleted = newData.IsDeleted;
                         db.Update(existingHeader);
                         db.SaveChanges();
 
@@ -284,6 +284,14 @@ namespace DataAccess
                                 existingdetail = db.TblTOrderDetails.Find(item.Id);
                                 if (existingdetail != null)
                                 {
+                                    TblMProduct product = db.TblMProducts.Find(item.ProductId);
+                                    if (newData.IsDeleted)
+                                    {
+                                        product.Stock += item.Qty;
+                                    }
+                                    else {
+                                        product.Stock += (existingdetail.Qty - item.Qty);
+                                    }
                                     existingProduct = db.TblMProducts.Find(item.ProductId);
                                     existingProduct!.Stock += (existingdetail.Qty - item.Qty);
                                     existingProduct.UpdateDate = newData.UpdateDate;

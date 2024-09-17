@@ -63,7 +63,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryModel.GetAll : {ex.Message}");
+                throw new Exception(ex.Message);
             }
             return dataCoba;
         }
@@ -136,7 +136,7 @@ namespace XPOS340.web.Models
             return apiResponse;
         }
 
-        public bool DeleteOldImage(string oldImageFileName)
+        private bool DeleteOldImage(string oldImageFileName)
         {
             try
             {
@@ -149,11 +149,13 @@ namespace XPOS340.web.Models
                 {
                     throw new ArgumentException("Product Api could");
                 }
-            }catch(Exception e)
-            {
-
+                return true;
             }
-            return true;
+            catch(Exception e)
+            {
+                return false;
+            }
+            
         }
 
         public async Task<VMResponse<VMTblMProduct>?> DeleteAsync(int id, int userId)
@@ -161,26 +163,32 @@ namespace XPOS340.web.Models
             VMResponse<VMTblMProduct>? apiResponse = new VMResponse<VMTblMProduct>();
             try
             {
-
-                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                VMTblMProduct? existingdata = await getById(id);
+                string? filename = existingdata?.Image;
+                
+                    apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
                     await httpClient.DeleteAsync($"{apiurl}Product/{id}/{userId}").Result.Content.ReadAsStringAsync()
                     );
-                /* apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
-                     await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()
-                     );*/
+                    /* apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                         await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()
+                         );*/
 
-                if (apiResponse != null)
-                {
-                    if (apiResponse.statusCode != HttpStatusCode.OK)
+                    if (apiResponse != null)
                     {
-                        throw new Exception(apiResponse.message);
-                    }
+                        if (apiResponse.statusCode != HttpStatusCode.OK)
+                        {
+                            throw new Exception(apiResponse.message);
+                        }
 
-                }
-                else
-                {
-                    throw new Exception("variant api could not be reached");
-                }
+                    }
+                    else
+                    {
+                        if (filename != null)
+                        {
+                            DeleteOldImage(filename);
+                        }
+                    }
+                
             }
             catch (Exception ex)
             {
@@ -196,23 +204,31 @@ namespace XPOS340.web.Models
             {
                 if (data.ImageFile != null)
                 {
-                    if(data.Image != null)
+                    if (data.Image != null)
                     {
-
+                        DeleteOldImage(data.Image);
                     }
                     data.Image = UploadFile(data.ImageFile);
                     data.ImageFile = null;
-                }
-                //manggil api update proses
-                jsonData = JsonConvert.SerializeObject(data);
-                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-                apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
-                    await httpClient.PutAsync($"{apiurl}Product", content).Result.Content.ReadAsStringAsync()
-                    );
-                /* apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
-                     await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()
-                     );*/
 
+                    //manggil api update proses
+                    jsonData = JsonConvert.SerializeObject(data);
+                    content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                    apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                        await httpClient.PutAsync($"{apiurl}Product", content).Result.Content.ReadAsStringAsync()
+                        );
+                    /* apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                         await httpClient.DeleteAsync($"{apiurl}Category?id={id}&userId={userId}").Result.Content.ReadAsStringAsync()
+                         );*/
+                }
+                else
+                {
+                    jsonData = JsonConvert.SerializeObject(data);
+                    content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                    apiResponse = JsonConvert.DeserializeObject<VMResponse<VMTblMProduct>?>(
+                        await httpClient.PutAsync($"{apiurl}Product", content).Result.Content.ReadAsStringAsync()
+                        );
+                }
                 if (apiResponse != null)
                 {
                     if (apiResponse.statusCode != HttpStatusCode.OK)

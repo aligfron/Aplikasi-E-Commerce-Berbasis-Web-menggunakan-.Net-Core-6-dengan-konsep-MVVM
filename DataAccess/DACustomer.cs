@@ -84,7 +84,39 @@ namespace DataAccess
             return response;
         }
 
+        public VMResponse<VMTblMCustomer?> GetByEmail(string email)
+        {
+            VMResponse<VMTblMCustomer?> response = new VMResponse<VMTblMCustomer?>();
+            try
+            {
+               response.data = (
 
+                        from c in db.TblMCustomers
+                        where c.IsDeleted == false
+                        && (c.Email == email)
+                        select new VMTblMCustomer(c)
+                    ).FirstOrDefault();
+
+                    if (response.data != null)
+                    {
+                        response.statusCode = HttpStatusCode.OK;
+                        response.message = $"{HttpStatusCode.OK} - Category Sukses Full";
+                    }
+                    else
+                    {
+                        response.statusCode = HttpStatusCode.NoContent;
+                        response.message = $"{HttpStatusCode.NoContent} - Category does not exis";
+                    }
+                
+              
+            }
+            catch (Exception e)
+            {
+
+                response.message = $"{HttpStatusCode.InternalServerError} - {e.Message}";
+            }
+            return response;
+        }
         public VMResponse<VMTblMCustomer?> Create(VMTblMCustomer data)
         {
             var response = new VMResponse<VMTblMCustomer?>();

@@ -16,3 +16,11 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+div.alert.popup{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    z-index: 888;
+
+}

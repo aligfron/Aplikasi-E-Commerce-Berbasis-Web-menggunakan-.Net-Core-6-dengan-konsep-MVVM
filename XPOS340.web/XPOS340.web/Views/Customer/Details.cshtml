@@ -1,0 +1,53 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMTblMCustomer?
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        @{
+            if(Model != null){
+                <div class="card-title row">
+                    <div class="col-4">FullName</div>
+                    <div class="col-8">@Model.Name</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Email</div>
+                    <div class="col-8">@Model.Email</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Address</div>
+                    <div class="col-8">@Model.Address</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Phone</div>
+                    <div class="col-8">@Model.Phone</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Role Id</div>
+                    <div class="col-8">@Model.RoleId</div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-2">Create By</div>
+                    <div class="col-4">@Model.CreateBy</div>
+                    <div class="col-2">Update By</div>
+                    <div class="col-4">@Model.UpdateBy</div>
+                </div>
+                <div class="row">
+                    <div class="col-2">Create Date</div>
+                    <div class="col-4">@Model.CreateDate</div>
+                    <div class="col-2">Update Date</div>
+                    <div class="col-4">@Model.UpdateDate</div>
+                </div>
+            }
+        }
+        
+    </div>
+</div>
+<script>
+    $("#staticModalLgLabel").text("@ViewBag.Title");
+</script>

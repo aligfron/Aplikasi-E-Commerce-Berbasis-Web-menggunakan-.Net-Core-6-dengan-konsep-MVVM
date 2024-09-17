@@ -1,0 +1,119 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<VMTblTOrderDetail>?
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        @{
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Product Name</th>
+                                        <th class="text-center">Product Price</th>
+                                        <th class="text-center">Product Qty</th>
+                                        <th class="text-center">Product Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                    {
+                        foreach (VMTblTOrderDetail orderDetail in Model)
+                        {
+                                            <tr>
+                                                <td>@orderDetail.ProductName</td>
+                                                <td class="text-end">@orderDetail.Price.ToString("C2")</td>
+                                                <td class="text-end">@orderDetail.Qty.ToString("N0")</td>
+                                                <td class="text-end">@((orderDetail.Price * orderDetail.Qty).ToString("C2"))</td>
+                                            </tr>
+                        }
+                    }else{
+                                        <tr>
+                                            <td colspan="4" class="text-center text-danger">data kosong</td>
+                                        </tr>
+                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2">Total</td>
+                                        <td class="text-end">@ViewBag.TotProduct.ToString("N0")</td>
+                                        <td class="text-end">@ViewBag.EstPrice.ToString("C2")</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+        }
+        
+
+    </div>
+</div>
+<div class="card-footer text-end">
+    <button id="btnSave" class="btn btn-secondary"><i class="fas fa-save"></i>Save</button>
+    <button id="btnCheckOut" class="btn btn-success"><i class="fas fa-check"></i>Check Out</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $("#staticModalLgLabel").text("@ViewBag.Title");
+    $("#btnSave").click(function (e) {
+        $.ajax({
+            url: "/Order/Save",
+            type: "post",
+            data: {
+                "listCart": listCart,
+                "totProduct": @ViewBag.TotProduct,
+                "estPrice": @ViewBag.EstPrice
+
+            },
+            dataType: "json",
+            beforeSend: () => { },
+            success: function(response){
+                if (response.statusCode == 201 || response.statusCode == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Data Berhasil Di Simpan',
+                        showConfirmButton: false,
+                        timer: 3000 // Show the alert for 2 seconds
+                    }).then(() => {
+                        location.href = "/Order/History"; // Reload page after alert
+                    });
+                }
+            },
+            error: function (errRes) {
+                console.error(errRes)
+                debugger
+            }
+        });
+    });
+    $("#btnCheckOut").click(function (e) {
+        $.ajax({
+            url: "/Order/CheckOut",
+            type: "post",
+            data: {
+                "listCart": listCart,
+                "totProduct": @ViewBag.TotProduct,
+                "estPrice": @ViewBag.EstPrice
+
+                },
+            dataType: "json",
+            beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 201 || response.statusCode == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Data Berhasil Di CheckOut',
+                        showConfirmButton: false,
+                        timer: 3000 // Show the alert for 2 seconds
+                    }).then(() => {
+                        location.href = "/Order/History"; // Reload page after alert
+                    });
+                }
+            },
+            error: function (errRes) {
+                console.error(errRes)
+                debugger
+            }
+        });
+    });
+</script>

@@ -1,0 +1,58 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMTblMProduct?
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div><a>Ali</a></div>
+        @{
+            if (Model != null)
+            {
+                <div class="card-title row justify-content-center">
+                    <img class=" justify-content-center img-thumbnail img-fluid rounded" style="height: 180px; width: 180px;" src="~/@ViewBag.imgFolder/@(Model?.Image ?? "image-empty.png")" />
+                </div>
+                <div class="row">
+                    <div class="col-4">Product Name</div>
+                    <div class="col-8">@Model.Name</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Stock</div>
+                    <div class="col-8">@Model.Stock</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Price</div>
+                    <div class="col-8">@Model.Price</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Variant Name</div>
+                    <div class="col-8">@Model.VariantName</div>
+                </div>
+                <div class="row">
+                    <div class="col-4">Category Name</div>
+                    <div class="col-8">@Model.CategoryName</div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-2">Create By</div>
+                    <div class="col-4">@Model.CreateBy</div>
+                    <div class="col-2">Update By</div>
+                    <div class="col-4">@Model.UpdateBy</div>
+                </div>
+                <div class="row">
+                    <div class="col-2">Create Date</div>
+                    <div class="col-4">@Model.CreateDate</div>
+                    <div class="col-2">Update Date</div>
+                    <div class="col-4">@Model.UpdateDate</div>
+                </div>
+            }
+        }
+        
+    </div>
+</div>
+<script>
+                    $("#staticModalLgLabel").text("@ViewBag.Title");
+</script>

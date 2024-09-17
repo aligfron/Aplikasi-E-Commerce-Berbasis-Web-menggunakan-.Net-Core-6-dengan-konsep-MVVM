@@ -1,0 +1,188 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<VMTblMProduct>?
+@{
+    Layout = "_CatalogView";
+}
+<div class="h3 mb-3 mt-3">
+</div>
+
+<!-- Card baris pertama -->
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card text-white bg-primary d-flex align-items-center justify-content-center" style="height: 100px;">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <h3 class="card-title text-center" id="totProduck">0</h3>
+                <button class="btn text-white h3 stretched-link text-center">Total Product</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card text-white bg-success d-flex align-items-center justify-content-center" style="height: 100px;">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <h3 class="card-title text-center" id="estPrice">0</h3>
+                <button class="btn text-white h3 stretched-link text-center">Estimate Price</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card text-white bg-warning d-flex align-items-center justify-content-center" style="height: 100px;">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <h3 class="card-title text-center"><i class="fas fa-shopping-bag"></i></h3>
+                <button id="addToCart" class="btn text-white h3 stretched-link text-center" disabled>Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Card baris kedua dengan margin top (jarak) -->
+<div class="row row-cols-1 row-cols-md-4 g-4 mt-4">
+    @{
+        if (Model != null)
+        {
+            foreach (VMTblMProduct product in Model)
+            {
+                        <div class="col">
+                            <div class="card h-100 d-flex flex-column">
+                                <img src="~/@ViewBag.imgFolder/@(product.Image ?? "image-empty.png")" class="card-img-top" alt="..." style="height: 300px; width: 100%; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-center align-middle text-truncate" id="productname-@product.Id">@product.Name</h5>
+                                    <p class="card-text text-center align-middle productstock-@product.Id" data-stock="@product.Stock">Stock : @product.Stock</p>
+                                    <p class="card-text text-center align-middle">Rp. @product.Price?.ToString("N0")</p>
+                                    <p style="display: none;" class="card-text text-center align-middle productprice-@product.Id" data-price="@product.Price">@product.Price</p>
+                                    <!-- Section untuk tombol tambah, kurang, dan label angka -->
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <button class="btn btn-danger" id="btnRemove-@product.Id" disabled data-id="@product.Id"><strong>-</strong></button>
+                                        <span class="angka-@product.Id">0</span> <!-- Label angka -->
+                                        <button class="btn btn-primary" id="btnAdd-@product.Id" data-id="@product.Id"><strong>+</strong></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            }
+        }
+        else
+        {
+                    <div class="col">
+                        <div class="card h-100 d-flex flex-column">
+                            <img src="..." class="card-img-top" alt="...">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">Produck</h5>
+                                <p class="card-text">Kosong</p>
+                            </div>
+                        </div>
+                    </div>
+        }
+    }
+</div>
+
+<script>
+    let listCart = [];
+
+    $(document).ready(function (e) {
+        let totProduct = parseInt($("#totProduck").text());
+        let estPrice = parseFloat($("#estPrice").text());
+
+        $(".btn-primary").click(function () {
+            let productId = $(this).data("id");
+            let productName = $("#productname-" + productId).text();
+            let productPrice = parseFloat($(".productprice-" + productId).data("price"));
+            let productStock = parseInt($(".productstock-" + productId).data("stock"));
+            let productQty = parseInt($(".angka-" + productId).text());
+
+            if (productStock > 0) {
+                productStock--;
+                totProduct++;
+                productQty++;
+                estPrice += productPrice;
+
+                let product = {
+                    ProductId: productId,
+                    ProductName: productName,
+                    Price: productPrice,
+                    Qty: productQty
+                };
+
+                let productCartIdx = listCart.findIndex(p => p.ProductId === productId);
+                if (productCartIdx < 0) {
+                    listCart.push(product);
+                } else {
+                    listCart[productCartIdx].Qty = productQty;
+                }
+
+                $("#totProduck").text(totProduct);
+                $("#estPrice").text(estPrice.toFixed(0));
+                $(".angka-" + productId).text(productQty);
+                $(".productstock-" + productId).text("Stock : " + productStock);
+                $(".productstock-" + productId).data("stock", productStock);
+
+                if (productQty > 0) {
+                    $("#btnRemove-" + productId).attr("disabled", false);
+                }
+
+                if (listCart.length > 0) {
+                    $("#addToCart").attr("disabled", false);
+                }
+            }
+        });
+
+        $(".btn-danger").click(function () {
+            let productId = $(this).data("id");
+            let productPrice = parseFloat($(".productprice-" + productId).data("price"));
+            let productStock = parseInt($(".productstock-" + productId).data("stock"));
+            let productQty = parseInt($(".angka-" + productId).text());
+
+            if (productQty > 0) {
+                productStock++;
+                totProduct--;
+                productQty--;
+                estPrice -= productPrice;
+
+                let productCartIdx = listCart.findIndex(p => p.ProductId === productId);
+
+                if (productCartIdx >= 0) {
+                    listCart[productCartIdx].Qty = productQty;
+                }
+
+                if (listCart[productCartIdx]?.Qty < 1) {
+                    listCart.splice(productCartIdx, 1);
+                }
+
+                $("#totProduck").text(totProduct);
+                $("#estPrice").text(estPrice.toFixed(2));
+                $(".angka-" + productId).text(productQty);
+                $(".productstock-" + productId).text("Stock : " + productStock);
+                $(".productstock-" + productId).data("stock", productStock);
+
+                if (productQty === 0) {
+                    $("#btnRemove-" + productId).attr("disabled", true);
+                }
+
+                if (listCart.length === 0) {
+                    $("#addToCart").attr("disabled", true);
+                }
+            }
+        });
+
+        $("#addToCart").click(function (e) {
+            $("#staticModalLgBody").html("");
+            $("#staticModalLgBody").load("/Order/Details/", {
+                "listCart" : listCart,
+                "totProduct" : totProduct,
+                "estPrice" : estPrice
+            },
+            function(res,stat){
+                if (stat == "success") {
+                        $("#staticModalLg").modal("show");
+                }else{
+                    alert("Ada yang salah");
+                }
+            }
+            
+            
+            );
+        });
+    });
+</script>

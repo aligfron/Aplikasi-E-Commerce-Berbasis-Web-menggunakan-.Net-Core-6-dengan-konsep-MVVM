@@ -76,6 +76,29 @@ namespace XPOS340.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("[action]/{email?}")]
+        public async Task<ActionResult> GetByEmail(string email)
+        {
+            try
+            {
+                VMResponse<VMTblMCustomer?> response = await Task.Run(() => customer.GetByEmail(email));
+                if (response.data != null)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    Console.WriteLine(response.message);
+                    return NoContent();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("CategoryController.GetByEmail " + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost]
         public async Task<ActionResult> Create(VMTblMCustomer data)
         {

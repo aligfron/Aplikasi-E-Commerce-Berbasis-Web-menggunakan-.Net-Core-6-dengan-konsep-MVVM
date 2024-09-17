@@ -1,0 +1,197 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<VMTblMProduct>?
+@{
+    Layout = "_CatalogView";
+}
+<div class="h3 mb-3 mt-3">
+</div>
+
+<!-- Card baris pertama -->
+<div class="row">
+    <div class="col-sm-4">
+        <a href="#" class="text-white card-link">
+            <div class="card text-white bg-primary" style="height: 100px">
+                <div class="card-body">
+                    <h3 class="card-title text-center align-middle" id="jmlProduck">0</h3>
+                    <p class="card-text text-center align-middle">Total Product</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-4">
+        <a href="#" class="text-white card-link">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h3 class="card-title text-center align-middle" id="jmlHarga">0</h3>
+                    <p class="card-text text-center align-middle">Estimate Price</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-4">
+        <a class="text-white card-link orderPreview" data-bs-toggle="modal" data-bs-target="#staticModalLg">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h3 class="card-title text-center align-middle"><i class="fas fa-shopping-bag"></i></h3>
+                    <p class="card-text text-center align-middle">Add to Cart</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Card baris kedua dengan margin top (jarak) -->
+
+<div class="row row-cols-1 row-cols-md-4 g-4 mt-4">
+    @{
+        if (Model != null)
+        {
+             foreach (VMTblMProduct product in Model)
+            {
+                        <div class="col">
+                            <div class="card h-100 d-flex flex-column">
+                                <img src="~/@ViewBag.imgFolder/@(product.Image ?? "image-empty.png")" class="card-img-top" alt="..." style="height: 300px; width: 100%; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-center align-middle">@product.Name</h5>
+                            <p class="card-text text-center align-middle stock" data-stock="@product.Stock">Stock : @product.Stock</p>
+                            <p class="card-text text-center align-middle">Rp. @product.Price?.ToString("N0")</p>
+                            <p style="display: none;" class="card-text text-center align-middle price" data-price="@product.Price">@product.Price</p>
+                                    <!-- Section untuk tombol tambah, kurang, dan label angka -->
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <button class="btn btn-danger" onclick="kurangiAngka(this)"><strong>-</strong></button>
+                                        <span class="angka">0</span> <!-- Label angka -->
+                                <button class="btn btn-primary" onclick="tambahAngka(this)"><strong>+</strong></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            }
+        }
+        else
+        {
+                    <div class="col">
+                        <div class="card h-100 d-flex flex-column">
+                            <img src="..." class="card-img-top" alt="...">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">Produck</h5>
+                                <p class="card-text">Kosong</p>
+                            </div>
+                        </div>
+                    </div>
+        }
+    }
+    
+    
+</div>
+
+<script>
+    $(".orderPreview").click(function (e) {
+
+        $("#staticModalLgBody").html("");
+        $("#staticModalLgBody").load("/Order/OrderPreview/");
+    });
+
+
+
+    var totalProduk = 0; // Variabel global untuk melacak jumlah total produk
+    var totalHarga = 0;
+    var rp = "Rp. ";
+
+    function updateTotalProduk(jumlah) {
+        var jmlProduckElement = document.getElementById('jmlProduck');
+        totalProduk += jumlah; // Update total produk berdasarkan nilai yang dikirim
+        jmlProduckElement.textContent = totalProduk; 
+    }
+    function updateTotalHarga(jumlahhrg) {
+        var jmlHargaElement = document.getElementById('jmlHarga');
+        totalHarga += jumlahhrg; 
+        jmlHargaElement.textContent = rp + totalHarga.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });;
+    }
+
+    function tambahAngka(button) {
+        var parent = button.parentElement; // Ambil parent elemen (div)
+        var angkaElement = parent.querySelector('.angka'); // Cari elemen dengan kelas .angka di dalam parent
+        var angka = parseInt(angkaElement.textContent); // Ambil angka dan konversi ke integer
+
+
+        var stockElement = parent.parentElement.querySelector('.stock');
+        var stok = parseInt(stockElement.getAttribute('data-stock'));
+
+        //harga
+        var priceElement = parent.parentElement.querySelector('.price');
+        var harga = parseInt(priceElement.textContent);
+        if (angka < stok) {
+
+            angka++; // Tambah 1
+            angkaElement.textContent = angka; // Update tampilan angka
+            updateTotalProduk(1); // Tambah 1 ke total produk
+
+
+            
+            updateTotalHarga(harga);
+        }
+    }
+
+    function kurangiAngka(button) {
+        var parent = button.parentElement; // Ambil parent elemen (div)
+        var angkaElement = parent.querySelector('.angka'); // Cari elemen dengan kelas .angka di dalam parent
+        var angka = parseInt(angkaElement.textContent); // Ambil angka dan konversi ke integer
+
+        var priceElement = parent.parentElement.querySelector('.price');
+        var harga = parseInt(priceElement.textContent);
+
+
+        if (angka > 0) { // Jangan biarkan angka menjadi negatif
+            angka--; // Kurangi 1
+            angkaElement.textContent = angka; // Update tampilan angka
+            updateTotalProduk(-1); // Kurangi 1 dari total produk
+
+            updateTotalHarga(-harga);
+        }
+
+
+    }
+</script>
+
+<style>
+    /* Pastikan card-body mengambil seluruh tinggi card */
+    .card-body {
+        display: flex;
+        flex-direction: column;
+    }
+
+        /* Atur elemen tombol tambah/kurang di bawah */
+        .card-body .mt-auto {
+            margin-top: auto; /* Bawa elemen ini ke paling bawah */
+        }
+
+    .card {
+        height: 100%;
+    }
+</style>
+
+
+<style>
+    .card-link {
+        text-decoration: none;
+    }
+
+        .card-link .card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            /* Efek hover */
+            .card-link .card:hover {
+                transform: translateY(-5px); /* Geser ke atas sedikit */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tambah bayangan */
+            }
+
+            /* Efek klik */
+            .card-link .card:active {
+                transform: translateY(2px); /* Geser ke bawah sedikit saat ditekan */
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Kurangi bayangan saat ditekan */
+            }
+</style>

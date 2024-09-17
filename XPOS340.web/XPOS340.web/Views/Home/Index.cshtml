@@ -9,8 +9,16 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Welcome </h1>
 
+
+@*     <div>
+        <label>Session Username : </label>
+        <span>@Context.Session.GetString("username");</span>
+    </div><div>
+        <label>Session Bootcamp Class : </label>
+        <span>@Context.Session.GetInt32("bootcamp");</span>
+    </div> *@
     <div>
         <table>
     
@@ -54,7 +62,7 @@
             </tr>
             </thead>
             <tbody>
-            @if(Model.Count > 0)
+            @if(Model != null)
             {
                 foreach(VMTblCoba coba in Model)
                 {

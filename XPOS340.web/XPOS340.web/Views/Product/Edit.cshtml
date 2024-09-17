@@ -12,11 +12,11 @@
             <img class=" justify-content-center img-thumbnail img-fluid rounded" style="height: 180px; width: 180px;" src="~/@ViewBag.imgFolder/@(Model?.Image ?? "image-empty.png")" />
         </div>
         <br />
-        <form id="frmProduct" >
+        <form id="frmProduct" enctype="multipart/form-data">
             <div class="card-title row">
                 <div class="col-4">Image<span class="text-danger"> * </span></div>
                 <div class="col-8">
-                    <input type="file" class="form-control" name="ImageFile" id="inputGroupFile02" accept=".png, .jpg, .jpeg" value="@Model.Image" />
+                    <input type="file" class="form-control" name="ImageFile" id="inputGroupFile02" accept=".png, .jpg, .jpeg" />
                 </div>
             </div>
             <div class="card-title row">
@@ -61,6 +61,7 @@
                 </div>
             </div>
             <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Image" value="@Model.Image" />
            <input type="hidden" name="UpdateBy" value="@Model.CreateBy" />
          </form>
 
@@ -174,48 +175,40 @@ $(document).ready(() => {
 
 
         $("#staticModalLgLabel").text("@ViewBag.Title");
-        $("#btnSave").click(function (e) {
-            //debugger
-            //console.log("#frmProduct isvalid?", $("#frmProduct").valid());
-            if ($("#frmProduct").valid()) {
-                $.ajax({
-                    url:"/Product/Edit",
-                    type: "post",
-                    data: $("#frmProduct").serialize(),
-                    dataType: "json",
-                    //beforeSend: () => { },
-                    success: function (response) {
-                        if (response.statusCode == 200 || response.statusCode == 201) {
-                            // Tampilkan alert sukses
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Data Berhasil Di Edit',
-                                showConfirmButton: false,
-                                timer: 3000 // Show the alert for 2 seconds
-                            }).then(() => {
-                                location.reload(); // Reload page after alert
-                            });
-                        } else {
-                            alert(response.statusCose+" - "+response.message)
-                        }
-                    },
-                    error: function (errResponse) {
-                        console.error(errResponse);
+        $("#btnSave").click((e) => $("#frmProduct").submit())
+    $("#frmProduct").submit(function (e) {
+        e.preventDefault()
+        let formData = new FormData($("#frmProduct")[0])
+        console.log("formData", formData);
+        if ($(this).valid()) {
+            $.ajax({
+                url: "/Product/Edit",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: () => { },
+                success: function (res) {
+                    if (res.statusCode == 201 || res.statusCode == 200) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Berhasil Di Edit',
+                            showConfirmButton: false,
+                            timer: 3000 // Show the alert for 2 seconds
+                        }).then(() => {
+                            location.reload(); // Reload page after alert
+                        });
                     }
-                });
-            } else {
-                console.error("Category data is not valid");
-            }
-            return false;
-        });
-        $("#frmProduct").submit(function (e) {
-            //desable from submit function
-            e.preventDefault();
+                },
+                error: function (errRes) {
+                    console.error(errRes)
+                    debugger
+                }
+            })
+        } else { return false }
+    });
 
 
-
-
-        });
         $("#frmProduct").validate({
             rules: {
                 CategoryName: {

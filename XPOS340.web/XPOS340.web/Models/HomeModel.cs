@@ -21,7 +21,7 @@ namespace XPOS340.web.Models
             {
                 dataCoba = JsonConvert.DeserializeObject<List<VMTblCoba>>(httpClient.GetStringAsync(apiurl+"Home").Result);
             } catch (Exception ex) {
-                throw new Exception("Home Api cannot be reache!");
+                throw new Exception(ex.Message);
             }
             return dataCoba;
         }

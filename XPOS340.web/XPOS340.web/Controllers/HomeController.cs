@@ -12,14 +12,25 @@ namespace XPOS340.web.Controllers
 
         public HomeController(ILogger<HomeController> logger, IConfiguration _config)
         {
+           
             _logger = logger;
             home = new HomeModel(_config);
         }
 
         public IActionResult Index()
         {
+            HttpContext.Session.SetString("infoMsg", "Ali Session");
+            HttpContext.Session.SetString("warnMsg", "Ali Session");
             //return View();
-            List<VMTblCoba> datacoba = home.getAllCoba();   
+           List <VMTblCoba>? datacoba = null;
+            try
+            {
+                datacoba = home.getAllCoba();
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Session.SetString("errMsg", ex.Message);
+            }
             return View(datacoba);
         }
 

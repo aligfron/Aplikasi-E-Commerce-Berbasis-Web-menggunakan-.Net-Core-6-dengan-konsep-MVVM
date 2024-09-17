@@ -1,0 +1,55 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    //get alert message from sassion
+    ViewBag.InfoMsg = Context.Session.GetString("infoMsg") ?? string.Empty;
+    ViewBag.WarnMsg = Context.Session.GetString("warnMsg") ?? string.Empty;
+    ViewBag.ErrMsg = Context.Session.GetString("errMsg") ?? string.Empty;
+
+    //reset alert session
+    Context.Session.SetString("infoMsg", string.Empty);
+    Context.Session.SetString("warnMsg", string.Empty);
+    Context.Session.SetString("errMsg", string.Empty);
+}
+<div class="container-fluid my-3 w-50 alert popup" id="alertPlaceholder">
+
+
+</div>
+
+
+
+
+<script>
+    function alert(msg, bgColor) {
+        bgColor = bgColor ?? "warning";
+
+        // Delay the appearance of the alert by 3 seconds
+        setTimeout(() => {
+            $("#alertPlaceholder").append(`
+                <div class="alert alert-${bgColor} alert-dismissible fade show mx-3 shadow" role="alert">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-info-circle text-${bgColor}"></i>
+                            <span>${msg}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+                `);
+            // Show the alert for 3 seconds, then fade out
+            setTimeout(() => {
+                $("#alertPlaceholder .alert").fadeOut('slow', function () {
+                    $(this).remove();
+                });
+            }, 5000); // 3 seconds
+        }, 1000); // 1 seconds
+    }
+
+    $(document).ready(() => {
+        // Trigger alerts based on ViewBag messages after 3 seconds
+        if ("@ViewBag.InfoMsg" != "") alert("@Html.Raw(ViewBag.InfoMsg)", "info");
+        if ("@ViewBag.WarnMsg" != "") alert("@Html.Raw(ViewBag.WarnMsg)", "warning");
+        if ("@ViewBag.ErrMsg" != "") alert("@Html.Raw(ViewBag.ErrMsg)", "danger");
+    });
+</script>

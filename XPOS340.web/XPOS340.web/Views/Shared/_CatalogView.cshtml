@@ -20,18 +20,30 @@
 
 </head>
 <body>
-    <!--Page Header-->
-    <partial name="_Header"/>
-    <partial name="_Alert" />
-    
+
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-home"></i>
+            </a>
+            <form class="d-flex" id="frmCategoryfilter" asp-controller="Order" asp-action="IndexCopy">
+                <input class="form-control me-2" type="text" id="filter" name="filter" value="@ViewBag.filter" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            <a class="btn btn-outline-success" asp-controller="Order" asp-action="History">
+                <i class="fas fa-history"></i>
+            </a>
+
+        </div>
+    </nav>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-    <partial name="_Footer" />
     <partial name="_modal" />
-    
+    <partial name="_Alert" />
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

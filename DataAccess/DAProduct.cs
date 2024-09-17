@@ -207,7 +207,7 @@ namespace DataAccess
                         response.message = $"{HttpStatusCode.NotFound} - Product Not Fount";
                     }
 
-                    
+                    existingData.Image = null;
                     existingData.IsDeleted = true;
                     existingData.UpdateBy = userId;
                     existingData.UpdateDate = DateTime.Now;

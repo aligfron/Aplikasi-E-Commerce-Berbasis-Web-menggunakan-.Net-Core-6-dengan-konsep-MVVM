@@ -9,6 +9,17 @@ namespace XPOS340.web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            //add browser session
+
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSession(
+                opt =>
+                {
+                    opt.IdleTimeout =TimeSpan.FromSeconds(30);
+                }
+                );
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -26,9 +37,16 @@ namespace XPOS340.web
 
             app.UseAuthorization();
 
+            // Activate Browser Session
+            app.UseSession();
+
+            /*app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");*/
+
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Auth}/{action=Index}/{id?}");
 
             app.Run();
         }

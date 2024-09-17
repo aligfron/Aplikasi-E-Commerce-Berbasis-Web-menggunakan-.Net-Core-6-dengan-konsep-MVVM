@@ -1,7 +1,7 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model List<VMTblMProduct>?
+@model Pegination<VMTblMProduct>
 @{
 }
 <div class="h3 mb-3">
@@ -16,17 +16,23 @@
 </div>
 <div class="d-flex justify-content-between">
     <button id="btnAdd" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-plus"></i></button>
-    <div class="input-group mx-5">
+    <form id="frmpage" method="get" asp-controller="Product" asp-action="Index" >
+        <div class="input-group mx-5">
+        
         <span class="input-group-text">Show </span>
-        <input class="form-control" type="text" id="pageSize" name="PageZise" value="10" />
+            <input class="form-control" type="text" id="pageSize" name="currPageSize" value="@ViewBag.PageSize" />
         <span class="input-group-text"> Entris</span>
-
+           
     </div>
-    <form  id="frmCategoryFilter" asp-controller="Product" asp-action="Index" >
+        <input type="hidden" name="filter" value="@ViewBag.filter" />
+        <input type="hidden" name="pageNumber" value="@(Model.PageIndex)" />
+        <input type="hidden" name="orderBy" value="@ViewBag.OrderBy" />
+    </form>
+    <form  id="frmCategoryfilter" asp-controller="Product" asp-action="Index" >
     <div class="input-group">
         <span class="input-group-text">Search : </span>
         <input class="form-control" type="text" id="filter" name="filter" value="@ViewBag.filter" />
-        <button type="submit" class="btn btn-primary input-group-text"><i class="fas fa-search"></i></button>
+            <button type="submit" class="btn btn-success input-group-text"><i class="fas fa-search"></i></button>
     </div>
     </form>
 </div>
@@ -37,11 +43,35 @@
             <tr>
                 <th class="col-2 text-center align-middle">Image</th>
                 <th class="col-1 text-center align-middle">ID</th>
-                <th class="col-2 text-center align-middle">Name</th>
-                <th class="col-2 text-center align-middle">Price</th>
-                <th class="col-1 text-center align-middle">Stok</th>
-                <th class="col-1 text-center align-middle">Variant Name</th>
-                <th class="col-2 text-center align-middle">Category Name</th>
+                <th class="col-2 text-center align-middle"><a asp-controller="Product" asp-action="Index" asp-route-filter="@ViewBag.filter"
+                       asp-route-pageNumber="@Model.PageIndex"
+                       asp-route-currPageSize="@ViewBag.PageSize"
+                       asp-route-orderBy="@ViewBag.OrderName">
+                Name</a></th>
+                <th class="col-2 text-center align-middle">
+                    <a asp-controller="Product" asp-action="Index" asp-route-filter="@ViewBag.filter"
+                       asp-route-pageNumber="@Model.PageIndex"
+                       asp-route-currPageSize="@ViewBag.PageSize"
+                       asp-route-orderBy="@ViewBag.OrderPrice">Price</a>
+                </th>
+                <th class="col-1 text-center align-middle">
+                    <a asp-controller="Product" asp-action="Index" asp-route-filter="@ViewBag.filter"
+                       asp-route-pageNumber="@Model.PageIndex"
+                       asp-route-currPageSize="@ViewBag.PageSize"
+                       asp-route-orderBy="@ViewBag.OrderStock">Stock</a>
+                </th>
+                <th class="col-1 text-center align-middle">
+                    <a asp-controller="Product" asp-action="Index" asp-route-filter="@ViewBag.filter"
+                       asp-route-pageNumber="@Model.PageIndex"
+                       asp-route-currPageSize="@ViewBag.PageSize"
+                       asp-route-orderBy="@ViewBag.OrderVariant">Variant Name</a>
+                </th>
+                <th class="col-2 text-center align-middle">
+                    <a asp-controller="Product" asp-action="Index" asp-route-filter="@ViewBag.filter"
+                       asp-route-pageNumber="@Model.PageIndex"
+                       asp-route-currPageSize="@ViewBag.PageSize"
+                       asp-route-orderBy="@ViewBag.OrderCategory">Category Name</a>
+                </th>
                 <th class="col-3 text-center align-middle">Action</th>
 
             </tr>
@@ -56,50 +86,102 @@
                 {
                     foreach (VMTblMProduct product in Model)
                     {
-                        <tr>
-                            <td class="text-center align-middle">
-                                <img class="img-thumbnail img-fluid rounded" src="~/@ViewBag.imgFolder/@(product.Image ?? "image-empty.png")" style="width: 80px; height: 80px;" />
-                            </td>
-                            <td class="text-center align-middle">@no</td>
-                            <td class="text-center align-middle">@product.Name</td>
-                            <td class="text-center align-middle">Rp. @product.Price?.ToString("N0")</td>
-                            <td class="text-center align-middle">@product.Stock</td>
-                            <td class="text-center align-middle">@product.VariantName</td>
-                            <td class="text-center align-middle">@product.CategoryName</td>
-                            <td class="text-center align-middle">
-                                <div class="btn-group" role="group">
-                                    <button data-id="@product.Id" class="btn btn-info" title="Detail" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-list"></i></button>
-                                    <button data-id="@product.Id" class="btn btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-edit"></i></button>
-                                    <button data-id="@product.Id" class="btn btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                                        <tr>
+                                            <td class="text-center align-middle">
+                                                <img class="img-thumbnail img-fluid rounded" src="~/@ViewBag.imgFolder/@(product.Image ?? "image-empty.png")" style="width: 80px; height: 80px;" />
+                                            </td>
+                                            <td class="text-center align-middle">@no</td>
+                                            <td class="text-center align-middle">@product.Name</td>
+                                            <td class="text-center align-middle">Rp. @product.Price?.ToString("N0")</td>
+                                            <td class="text-center align-middle">@product.Stock</td>
+                                            <td class="text-center align-middle">@product.VariantName</td>
+                                            <td class="text-center align-middle">@product.CategoryName</td>
+                                            <td class="text-center align-middle">
+                                                <div class="btn-group" role="group">
+                                                    <button data-id="@product.Id" class="btn btn-info" title="Detail" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-list"></i></button>
+                                                    <button data-id="@product.Id" class="btn btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#staticModalLg"><i class="fas fa-edit"></i></button>
+                                                    <button data-id="@product.Id" class="btn btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fas fa-trash-alt"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
                         no++;
                     }
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="8" class="text-center align-middle">Data Belum Ada</td>
-                    </tr>
+                                    <tr>
+                                        <td colspan="8" class="text-center align-middle">Data Belum Ada</td>
+                                    </tr>
                 }
             }
         </tbody>
     </table>
 
 </div>
-
 <div class="row">
-    <div class="col-10">page ? of ?</div>
-    <div class="btn-group col-2">
-        <button class="btn btn-secondary" title="Previous Page..."><i class="fas fa-backward"></i></button>
-        <button class="btn btn-secondary" title="Next Page..."><i class="fas fa-forward"></i></button>
+    <div class="col-10 text-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex <= 1 ? 1 : Model.PageIndex - 1, currPageSize = ViewBag.PageSize, filter = ViewBag.filter, orderBy = ViewBag.OrderBy })" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, currPageSize = ViewBag.PageSize, filter = ViewBag.filter, orderBy = ViewBag.OrderBy })">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex >= Model.TotalPages ? Model.TotalPages : Model.PageIndex + 1, currPageSize = ViewBag.PageSize, filter = ViewBag.filter, orderBy = ViewBag.OrderBy })" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
+
+@* <div class="row">
+    <div class="col-10">@Model.PageIndex of @Model.TotalPages</div>
+    <div class="btn-group col-2">
+
+        <a class="btn btn-secondary @(!Model.HasPreviousPage ? "disabled":"")" title="Previous Page..." asp-controller="Product" asp-action="Index"
+           asp-route-filter="@ViewBag.filter"
+        asp-route-pageNumber="@(Model.PageIndex <= 1 ? Model.PageIndex : Model.PageIndex-1) "
+        
+           asp-route-currPageSize="@ViewBag.PageSize"
+           asp-route-orderBy="@ViewBag.OrderBy"><i class="fas fa-backward"></i></a>
+        <a class="btn btn-secondary  @(!Model.HasNextPage ? "disabled":" ")"  title="Next Page..."
+           asp-controller="Product" asp-action="Index"
+           asp-route-filter="@ViewBag.filter"
+           asp-route-pageNumber="@(Model.PageIndex >= Model.TotalPages ? Model.PageIndex : Model.PageIndex + 1) "
+           asp-route-currPageSize="@ViewBag.PageSize" asp-route-orderBy="@ViewBag.OrderBy"><i class="fas fa-forward"></i></a>
+    </div>
+</div> *@
+
 <script>
     function detailClick() {
 
     }
+    // function RefreshPage(filter, pageNumber, pageSize, orderBy) {
+    //     location.href = `/Product/Index?filter=${filter}&pageNumber=${pageNumber}&currPageSize=${pageSize}&orderBy=${orderBy}`;
+    // }
+
+    // $("th a").click(function (e) {
+    //     let orderBy = $(this).data("orderBy");
+    //     RefreshPage("@ViewBag.filter", "@Model.PageIndex", "@ViewBag.PageSize", orderBy);
+    // });
+
+    // $("#frmCategoryfilter").submit(function (e) {
+    //     e.preventDefault();
+    //     RefreshPage($(this)[0].filter.value, "@Model.PageIndex", "@ViewBag.PageSize", "@ViewBag.OrderBy");
+    // });
     $("#btnAdd").click(function (e) {
         $("#staticModalLgBody").html("");
         $("#staticModalLgBody").load("/Product/Create/");

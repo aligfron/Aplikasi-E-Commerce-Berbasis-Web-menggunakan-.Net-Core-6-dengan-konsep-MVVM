@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using XPOS240.ViewModel;
+using XPOS340.web.AddOns;
 using XPOS340.web.Models;
 
 namespace XPOS340.web.Controllers
@@ -8,21 +10,25 @@ namespace XPOS340.web.Controllers
     {
         private readonly VariantModel variant;
         private CategoryModel category;
+        private readonly int pageZise;
 
         public VariantController(IConfiguration _config)
         {
             variant = new VariantModel(_config);
             category = new CategoryModel(_config);
+            pageZise = int.Parse(_config["PageSize"]);
         }
 
-        public async Task<IActionResult> Index(string? filter)
+        public async Task<IActionResult> Index(string? filter, int? pageNumber, int? currPageSize)
         {
             List<VMTblMVariant>? data = await variant.GetByFilter(filter);
 
             ViewBag.Title = "Variant List";
             ViewBag.Filter = filter;
 
-            return View(data);
+            ViewBag.PageSize = (currPageSize ?? pageZise);
+
+            return View(Pegination<VMTblMVariant>.Create(data ?? new List<VMTblMVariant>(), pageNumber ?? 1, ViewBag.PageSize));
 
         }
         public async Task<IActionResult> Details(int id)

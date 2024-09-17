@@ -41,7 +41,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryModel.GetAll : {ex.Message}");
+                throw new Exception(ex.Message);
             }
             return dataCoba;
         }
@@ -71,7 +71,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryModel.GetAll : {ex.Message}");
+                throw new Exception(ex.Message);
             }
             return dataCoba;
         }
@@ -99,7 +99,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryModel.GetById : {ex.Message}");
+                throw new Exception(ex.Message);
             }
             return dataCoba;
         }
@@ -131,7 +131,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception e)
             {
-                Console.WriteLine($"CategoryModel.GetbyId: {e.Message}");
+                throw new Exception(e.Message);
 
             }
             return apiResponse;
@@ -164,7 +164,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryModel.GetbyId: {ex.Message}");
+                throw new Exception(ex.Message);
             }
             return apiResponse;
         }
@@ -196,7 +196,7 @@ namespace XPOS340.web.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryModel.GetbyId: {ex.Message}");
+                throw new Exception(ex.Message);
             }
             return apiResponse;
         }

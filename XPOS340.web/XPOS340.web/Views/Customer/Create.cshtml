@@ -1,0 +1,130 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form id="frmCustomer" >
+                            <div class="card-title row">
+                                <div class="col-4">Full Name <span class="text-danger"> * </span></div>
+                                <div class="col-8"><input type="text" class="form-control" name="Name"  /></div>
+                            </div>
+                            <div class="card-title row">
+                                <div class="col-4">Email</div>
+                                <div class="col-8"><input type="text" class="form-control" name="Email" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Address</div>
+                <div class="col-8"><input type="text" class="form-control" name="Address" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Phone</div>
+                <div class="col-8"><input type="text" class="form-control" name="Phone" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Password</div>
+                <div class="col-8"><input type="text" class="form-control" name="Password" /></div>
+            </div>
+            <div class="card-title row">
+                <div class="col-4">Role Id</div>
+                <div class="col-8"><input type="text" class="form-control" name="RoleId"/></div>
+            </div>
+                                <input type="hidden" name="CreateBy" value="2" />
+         </form>
+
+
+
+        
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <button type="button" class="btn btn-success" id="btnSave">Save</button>
+        &nbsp;
+        <button type="reset" class="btn btn-primary" id="btnReset">Reset</button>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(() => {
+        $("#staticModalLabel").text("@ViewBag.Title");
+        $("#btnSave").click(function (e) {
+            //debugger
+            //console.log("#frmCustomer isvalid?", $("#frmCustomer").valid());
+            if ($("#frmCustomer").valid()) {
+                $.ajax({
+                    url:"/Customer/Create",
+                    type: "post",
+                    data: $("#frmCustomer").serialize(),
+                    dataType: "json",
+                    //beforeSend: () => { },
+                    success: function (response) {
+                        if (response.statusCode == 200 || response.statusCode == 201) {
+                            // Tampilkan alert sukses
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Berhasil Di Tambah',
+                                showConfirmButton: false,
+                                timer: 3000 // Show the alert for 2 seconds
+                            }).then(() => {
+                                location.reload(); // Reload page after alert
+                            });
+                        } else {
+                            alert(response.statusCose+" - "+response.message)
+                        }
+                    },
+                    error: function (errResponse) {
+                        console.error(errResponse);
+                    }
+                });
+            } else {
+                console.error("Category data is not valid");
+            }
+            return false;
+        });
+        $("#frmCustomer").submit(function (e) {
+            //desable from submit function
+            e.preventDefault();
+
+
+
+
+        });
+        $("#frmCustomer").validate({
+            rules: {
+                Name: {
+                    required: true,
+                    maxlength: 100,
+                    minlength: 3
+                },
+                Email: {
+                    required: true
+                },
+                Password :{
+                    required: true
+                },
+                Address: {
+                    required: true
+                },
+                Phone: {
+                    required: true
+                }
+
+            },
+            messages: {
+                Name: {
+                    minlength:"Name must at least 3 characters long.",
+                    maxlength: "Name must at least 100 characters long."
+                }
+            },
+            errorClass:"text-danger"
+        });
+        $("#btnReset").click(() => {
+            $("#frmCustomer")[0].reset();
+        });
+    });
+</script>

@@ -1,0 +1,176 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model List<VMTblTOrder>?
+@{
+    Layout = "_CatalogView";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-center">Date</th>
+            <th class="text-center">Transaction Code</th>
+            <th class="text-center">Amount</th>
+            <th class="text-center">Quantity</th>
+            <th class="text-center">Check Out</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (VMTblTOrder order in Model)
+            {
+                <tr>
+                    <td class="text-center align-middle">@order.CreateDate</td>
+                    <td class="text-center align-middle">@order.TrxCode</td>
+                    <td class="text-center align-middle">@order.Amount</td>
+                    <td class="text-center align-middle">@order.TotalQty</td>
+                    <td class="text-center">
+                        @if (order.IsCheckout == false)
+                        {
+                            <i class="fas fa-times text-danger"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-check text-success"></i>
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-primary" id="btnDetails-@order.Id" data-id="@order.Id"
+                                data-bs-toggle="collapse" data-bs-target="#detail-row-@order.Id">
+                            <i class="fas fa-angle-down"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr id="detail-row-@order.Id" class="collapse">
+                    <td colspan="6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center col-5">Product Name</th>
+                                    <th class="text-center col-3">Price</th>
+                                    <th class="text-center col-1">Quantity</th>
+                                    <th class="text-center col-3">Sub Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (VMTblTOrderDetail orderDetail in order.OrderDetails)
+                                {
+                                    <tr>
+                                        <td>@orderDetail.ProductName</td>
+                                        <td class="text-end">@orderDetail.Price.ToString("N0")</td>
+                                        <td class="text-end">@orderDetail.Qty.ToString("N0")</td>
+                                        <td class="text-end">@((orderDetail.Price * orderDetail.Qty).ToString("N0"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end">
+                                        @if (!order.IsCheckout)
+                                        {
+                                            <button data-orderid="@order.Id" class="btn btn-danger btnCancelOrder"><i class="fas fa-circle-xmark"></i> Cancel</button>
+                                            @Html.Raw("&nbsp;")
+                                            <button data-orderid="@order.Id" class="btn btn-success btnCheckout"><i class="fas fa-shopping-bag"></i> Checkout</button>
+                                        }
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </td>
+                </tr>
+
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-danger">Data kosong</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $("#staticModalLgLabel").text("@ViewBag.Title");
+</script>
+<script>
+    $("#btnAdd").click(() => { location.replace("/Order"); });
+
+    $(".btnCheckout").click(function () {
+        let orderId = $(this).data("orderid");
+
+        $.ajax({
+            url: "/Order/Edit",
+            type: "post",
+            data: {
+                "orderHeaderId": orderId,
+                "updateBy": 2,
+                "isCheckOut" : true
+            },
+            dataType: "json",
+            beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Data Berhasil Di CheckOut',
+                        showConfirmButton: false,
+                        timer: 3000 // Show the alert for 2 seconds
+                    }).then(() => {
+                        location.reload(); // Reload page after alert
+                    });
+                }
+                else {
+                    console.error("[" + response.statusCode + "] " + response.message);
+                    debugger;
+                }
+            },
+            error: function (errResponse) {
+                console.error(errResponse);
+                debugger;
+            }
+        });
+    });
+
+    $(".btnCancelOrder").click(function () {
+        let orderId = $(this).data("orderid");
+
+        $.ajax({
+            url: "/Order/Edit",
+            type: "post",
+            data: {
+                "orderHeaderId": orderId,
+                "updateBy": 1,
+                "isDeleted": true
+            },
+            dataType: "json",
+            beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 200) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Data Berhasil Di Cencel',
+                        showConfirmButton: false,
+                        timer: 3000 // Show the alert for 2 seconds
+                    }).then(() => {
+                        location.reload(); // Reload page after alert
+                    });
+                }
+                else {
+                    console.error("[" + response.statusCode + "] " + response.message);
+                    debugger;
+                }
+            },
+            error: function (errResponse) {
+                console.error(errResponse);
+                debugger;
+            }
+        });
+    });
+</script>
+
