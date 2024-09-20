@@ -5,33 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - XPOS340.web</title>
 
-    <!--jquary-->
+    <!--jQuery-->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!--jquary validation-->
+    <!--jQuery validation-->
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 
-    <!--bootstap css librari-->
+    <!--Bootstrap CSS library-->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/XPOS340.web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
-
 </head>
 <body>
-    <!--Page Header-->
-    <partial name="_Header"/>
-    <partial name="_Alert" />
-    
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <div class="d-flex flex-column min-vh-100">
+        <!--Page Header-->
+        <partial name="_Header" />
+        <partial name="_Alert" />
+
+        <!-- Page Content -->
+        <div class="container flex-grow-1">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <partial name="_Footer" />
+        <partial name="_modal" />
     </div>
-    <partial name="_Footer" />
-    <partial name="_modal" />
-    
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -17,23 +17,24 @@ namespace XPOS340.web.Controllers
             pageZise = int.Parse(_config["PageSize"]);
 
 
-            
+
         }
         private IActionResult? CheckSession()
         {
+
+
             int? custId = HttpContext.Session.GetInt32("custId");
             int? roleId = HttpContext.Session.GetInt32("custRole");
-
             if (custId == null)
             {
                 HttpContext.Session.SetString("errMsg", "Please Login first");
-                return RedirectToAction("Index", "Auth");
+                return RedirectToAction("Index", "Home");
             }
 
             if (roleId != 1)
             {
                 HttpContext.Session.SetString("errMsg", "you are not autor");
-                return RedirectToAction("Index", "Auth");
+                return RedirectToAction("Index", "Home");
             }
 
             return null;
@@ -67,7 +68,11 @@ namespace XPOS340.web.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            CheckSession();
+            IActionResult? sessionResult = CheckSession();
+            if (sessionResult != null)
+            {
+                return sessionResult;
+            }
             VMTblMCategory? data = await category.getById(id);
 
             ViewBag.Title = "Category Detail";
@@ -75,7 +80,11 @@ namespace XPOS340.web.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            CheckSession();
+            IActionResult? sessionResult = CheckSession();
+            if (sessionResult != null)
+            {
+                return sessionResult;
+            }
             VMTblMCategory? data = await category.getById(id);
 
             ViewBag.Title = "Category Edit";
@@ -84,12 +93,16 @@ namespace XPOS340.web.Controllers
         [HttpPost]
         public async Task<VMResponse<VMTblMCategory>?> EditAsync(VMTblMCategory data)
         {
-            CheckSession();
+            
             return (await category.UpdateAsync(data));
         }
         public IActionResult Create()
         {
-            CheckSession();
+            IActionResult? sessionResult = CheckSession();
+            if (sessionResult != null)
+            {
+                return sessionResult;
+            }
             ViewBag.Title = "New Category";
 
             return View();
@@ -102,7 +115,11 @@ namespace XPOS340.web.Controllers
         }
         public IActionResult Delete(int id)
         {
-            CheckSession();
+            IActionResult? sessionResult = CheckSession();
+            if (sessionResult != null)
+            {
+                return sessionResult;
+            }
             ViewBag.Title = "New Category";
 
             return View(id);
@@ -110,7 +127,7 @@ namespace XPOS340.web.Controllers
         [HttpPost]
         public async Task<VMResponse<VMTblMCategory>?> DeleteAsync(int id, int userId)
         {
-            CheckSession();
+            
             return (await category.DeleteAsync(id,userId));
         }
     }

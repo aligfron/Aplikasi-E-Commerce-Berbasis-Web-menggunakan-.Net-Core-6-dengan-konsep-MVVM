@@ -118,7 +118,8 @@ namespace DataAccess
                           && (oh.TrxCode.Contains(filter) ||
                               c.Name.Contains(filter) ||
                               oh.Amount.ToString().Contains(filter) ||
-                              oh.TotalQty.ToString().Contains(filter))
+                              oh.TotalQty.ToString().Contains(filter) || 
+                              oh.CreateBy.ToString().Contains(filter))
                     select new VMTblTOrder
                     {
                         Id = oh.Id,

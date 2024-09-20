@@ -19,8 +19,6 @@ namespace XPOS340.web.Controllers
 
         public IActionResult Index()
         {
-            HttpContext.Session.SetString("infoMsg", "Ali Session");
-            HttpContext.Session.SetString("warnMsg", "Ali Session");
             //return View();
            List <VMTblCoba>? datacoba = null;
             try

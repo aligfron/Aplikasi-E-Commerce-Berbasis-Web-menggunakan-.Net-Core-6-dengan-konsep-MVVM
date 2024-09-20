@@ -8,8 +8,12 @@
     };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome </h1>
+<div class="text-center justify-content-center align-items-center ">
+    
+    <h1 class="display-4">Welcome @Context.Session.GetString("custName")</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
 
 
 @*     <div>
@@ -19,7 +23,7 @@
         <label>Session Bootcamp Class : </label>
         <span>@Context.Session.GetInt32("bootcamp");</span>
     </div> *@
-    <div>
+    @* <div>
         <table>
     
         <thead>
@@ -77,7 +81,6 @@
             }
             </tbody>
 </table>
-    </div>
+    </div> *@
 
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

@@ -63,7 +63,8 @@
             data: {
                 "listCart": listCart,
                 "totProduct": @ViewBag.TotProduct,
-                "estPrice": @ViewBag.EstPrice
+                "estPrice": @ViewBag.EstPrice,
+                "createBy": @ViewBag.userId
 
             },
             dataType: "json",
@@ -93,7 +94,8 @@
             data: {
                 "listCart": listCart,
                 "totProduct": @ViewBag.TotProduct,
-                "estPrice": @ViewBag.EstPrice
+                "estPrice": @ViewBag.EstPrice,
+                "createBy": @ViewBag.userId
 
                 },
             dataType: "json",
@@ -106,7 +108,7 @@
                         showConfirmButton: false,
                         timer: 3000 // Show the alert for 2 seconds
                     }).then(() => {
-                        location.href = "/Order/History"; // Reload page after alert
+                        location.href = "/Order/DetailsCheckOut2"; // Reload page after alert
                     });
                 }
             },

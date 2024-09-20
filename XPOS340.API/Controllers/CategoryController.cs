@@ -13,7 +13,7 @@ namespace XPOS340.API.Controllers
         public CategoryController(XPOS340Context _db) { 
             category = new DACategory(_db);
         }
-        [HttpGet]
+        [HttpGet]//namanya anotasi
         public async Task<ActionResult> GetAll()
         {
             try
@@ -36,7 +36,7 @@ namespace XPOS340.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("[action]/{filter?}")]
+        [HttpGet("[action]/{filter?}")]//namanya anotasi
         public async Task<ActionResult> GetBy(string? filter)
         {
             try
@@ -51,7 +51,7 @@ namespace XPOS340.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}")]//namanya anotasi
         public async Task<ActionResult> GetById(int id)
         {
             try

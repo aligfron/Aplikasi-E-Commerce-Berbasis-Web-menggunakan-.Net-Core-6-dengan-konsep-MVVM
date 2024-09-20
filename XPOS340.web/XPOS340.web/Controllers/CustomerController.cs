@@ -10,13 +10,42 @@ namespace XPOS340.web.Controllers
     {
         private readonly CustomerModel customer;
         private readonly int pageZise;
+        private int? custId = null;
+        private int? roleId = null;
+
         public CustomerController(IConfiguration _config)
         {
             customer = new CustomerModel(_config);
             pageZise = int.Parse(_config["PageSize"]);
         }
+
+        private IActionResult? CheckSession()
+        {
+
+            int? custId = HttpContext.Session.GetInt32("custId");
+            int? roleId = HttpContext.Session.GetInt32("custRole");
+
+            if (custId == null)
+            {
+                HttpContext.Session.SetString("errMsg", "Please Login first");
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (roleId != 1)
+            {
+                HttpContext.Session.SetString("errMsg", "you are not autor");
+                return RedirectToAction("Index", "Home");
+            }
+
+            return null;
+        }
         public async Task<IActionResult> Index(string? filter, int? pageNumber, int? currPageSize)
         {
+            IActionResult? sessionResult = CheckSession();
+            if (sessionResult != null)
+            {
+                return sessionResult;
+            }
             List<VMTblMCustomer>? data = new List<VMTblMCustomer>();
             try
             {

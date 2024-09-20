@@ -1,51 +1,59 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-
-@model List<VMTblTOrder>?
+@model VMTblTOrder?
 @{
     Layout = "_CatalogView";
 }
 
+<h3>Details Check Out</h3>
 <table class="table">
-    <thead>
-        <tr>
-            <th class="text-center">Date</th>
-            <th class="text-center">Transaction Code</th>
-            <th class="text-center">Amount</th>
-            <th class="text-center">Quantity</th>
-            <th class="text-center">Check Out</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+    <tr>
+        <th>Date</th>
+        <td>: @Model.CreateDate</td>
+    </tr>
+    <tr>
+        <th>Transaction Code</th>
+        <td>: @Model.TrxCode</td>
+    </tr>
+    <tr>
+        <th>Amount</th>
+        <td>: @Model.Amount</td>
+    </tr>
+    <tr>
+        <th>Quantity</th>
+        <td>: @Model.TotalQty</td>
+    </tr>
+    <tr>
+        <th>Custommer Name</th>
+        <td>: @Context.Session.GetString("custName")</td>
+    </tr>
+    <tr>
+        <th>Check Out</th>
+        <td>: 
+            @if (Model.IsCheckout == false)
+            {
+                <i class="fas fa-times text-danger"></i>
+            }
+            else
+            {
+                <i class="fas fa-check text-success"></i>
+            }
+        </td>
+    </tr>
+</table>
+
+
+
+
+<table class="table">
     <tbody>
         @if (Model != null)
         {
-            foreach (VMTblTOrder order in Model)
+@*             foreach (VMTblTOrder order in Model)
             {
+                *@ 
                 <tr>
-                    <td class="text-center align-middle">@order.CreateDate</td>
-                    <td class="text-center align-middle">@order.TrxCode</td>
-                    <td class="text-center align-middle">@order.Amount</td>
-                    <td class="text-center align-middle">@order.TotalQty</td>
-                    <td class="text-center">
-                        @if (order.IsCheckout == false)
-                        {
-                            <i class="fas fa-times text-danger"></i>
-                        }
-                        else
-                        {
-                            <i class="fas fa-check text-success"></i>
-                        }
-                    </td>
-                    <td class="text-center">
-                        <button class="btn btn-primary" id="btnDetails-@order.Id" data-id="@order.Id"
-                                data-bs-toggle="collapse" data-bs-target="#detail-row-@order.Id">
-                            <i class="fas fa-angle-down"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr id="detail-row-@order.Id" class="collapse">
                     <td colspan="6">
                         <table class="table">
                             <thead>
@@ -57,28 +65,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (VMTblTOrderDetail orderDetail in order.OrderDetails)
+                                @foreach (VMTblTOrderDetail orderDetail in Model.OrderDetails)
                                 {
                                     <tr>
                                         <td>@orderDetail.ProductName</td>
-                                        <td class="text-end">@orderDetail.Price.ToString("N0")</td>
-                                        <td class="text-end">@orderDetail.Qty.ToString("N0")</td>
-                                        <td class="text-end">@((orderDetail.Price * orderDetail.Qty).ToString("N0"))</td>
+                                        <td class="text-center">@orderDetail.Price.ToString("N0")</td>
+                                        <td class="text-center">@orderDetail.Qty.ToString("N0")</td>
+                                        <td class="text-center">@((orderDetail.Price * orderDetail.Qty).ToString("N0"))</td>
                                     </tr>
                                 }
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="4" class="text-end">
-
-                                        
-                                        @if (!order.IsCheckout)
+                                        @if (!Model.IsCheckout)
                                         {
-                                            <button data-orderid="@order.Id" class="btn btn-danger btnCancelOrder"><i class="fas fa-circle-xmark"></i> Cancel</button>
+                                            <button data-orderid="@Model.Id" class="btn btn-danger btnCancelOrder"><i class="fas fa-circle-xmark"></i> Cancel</button>
                                             @Html.Raw("&nbsp;")
-                                            <button data-orderid="@order.Id" class="btn btn-success btnCheckout"><i class="fas fa-shopping-bag"></i> Checkout</button>
-                                        }else{
-                                            <button data-orderid="@order.Id" class="btn btn-danger btnDetailOrder"><i class="fas fa-info"></i> Details</button>
+                                            <button data-orderid="@Model.Id" class="btn btn-success btnCheckout"><i class="fas fa-shopping-bag"></i> Checkout</button>
                                         }
                                     </td>
                                 </tr>
@@ -88,7 +92,7 @@
                 </tr>
 
             }
-        }
+        
         else
         {
             <tr>
@@ -114,7 +118,7 @@
             data: {
                 "orderHeaderId": orderId,
                 "updateBy": 2,
-                "isCheckOut" : true
+                "isCheckOut": true
             },
             dataType: "json",
             beforeSend: () => { },
@@ -176,14 +180,5 @@
             }
         });
     });
-
-
-    $(".btnDetailOrder").click(function () {
-        let orderId = $(this).data("orderid");
-
-        // Redirect ke URL yang sesuai
-        window.location.href = "/Order/DetailsCheckOut/" + orderId;
-    });
-
 </script>
 

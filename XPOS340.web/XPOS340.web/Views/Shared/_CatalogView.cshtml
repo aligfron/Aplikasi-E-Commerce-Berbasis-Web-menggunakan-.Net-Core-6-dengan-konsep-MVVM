@@ -25,6 +25,8 @@
         <div class="container">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <i class="fas fa-home"></i>
+            </a><a class="navbar-brand" asp-controller="Order" asp-action="IndexCopy">
+                Order
             </a>
             <form class="d-flex" id="frmCategoryfilter" asp-controller="Order" asp-action="IndexCopy">
                 <input class="form-control me-2" type="text" id="filter" name="filter" value="@ViewBag.filter" aria-label="Search">

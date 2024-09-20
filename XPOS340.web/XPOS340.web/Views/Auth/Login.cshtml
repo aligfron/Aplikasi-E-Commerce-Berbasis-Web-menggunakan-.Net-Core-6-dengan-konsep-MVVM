@@ -6,20 +6,24 @@
 }
 <form asp-controller="Auth" asp-action="Login" method="post" id="frmLogin">
     <div class="card">
-        <div class="card-header h3">Login</div>
+        
         <div class="card-body">
             <div class="input-group mb-3">
                 <label class="input-group-text col-3" for="txtEmail">Email</label>
                 <input type="email" class="form-control col-9" id="txtEmail" name="Email" />
             </div>
             <div class="input-group">
-                <label class="input-group-text col-3" for="txtPassword">Email</label>
+                <label class="input-group-text col-3" for="txtPassword">Password</label>
                 <input type="password" class="form-control col-9" id="txtPassword" name="Password" />
             </div>
+            <br />
+            <div class="input-group justify-content-end">
+                
+                    <button type="submit" class="btn btn-primary"><span>Login</span></button>
+                
+            </div>
         </div>
-        <div class="card-footer d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary"><span>Login</span></button>
-        </div>
+        
     </div>
 
 </form>

@@ -12,6 +12,8 @@ namespace XPOS340.web.Controllers
         private readonly int pageZise;
         private readonly VariantModel variant;
         private CategoryModel category;
+        private int? custId = null;
+        private int? roleId = null;
         public ProductController(IConfiguration _config, IWebHostEnvironment _webHostEnv)
         {
             product = new ProductModel(_config, _webHostEnv);
@@ -20,8 +22,32 @@ namespace XPOS340.web.Controllers
             imageFolder = _config["ImageFolder"];
             pageZise = int.Parse(_config["PageSize"]);
         }
+        private IActionResult? CheckSession()
+        {
+            int? custId = HttpContext.Session.GetInt32("custId");
+            int? roleId = HttpContext.Session.GetInt32("custRole");
+
+            if (custId == null)
+            {
+                HttpContext.Session.SetString("errMsg", "Please Login first");
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (roleId != 1)
+            {
+                HttpContext.Session.SetString("errMsg", "you are not autor");
+                return RedirectToAction("Index", "Home");
+            }
+
+            return null;
+        }
         public async Task<IActionResult> Index(string? filter, int? pageNumber, int? currPageSize, string? orderBy)
         {
+            IActionResult? sessionResult = CheckSession();
+            if (sessionResult != null)
+            {
+                return sessionResult;
+            }
             List<VMTblMProduct>? data = (string.IsNullOrEmpty(filter)) 
                 ? await product.getByFilter("") : await product.getByFilter(filter);
 

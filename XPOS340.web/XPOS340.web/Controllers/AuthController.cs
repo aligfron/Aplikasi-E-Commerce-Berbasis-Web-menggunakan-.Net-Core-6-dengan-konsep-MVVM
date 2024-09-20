@@ -34,7 +34,7 @@ namespace XPOS340.web.Controllers
                         HttpContext.Session.SetString("custName", custData.Name);
                         HttpContext.Session.SetString("custEmail", custData.Email);
                         HttpContext.Session.SetInt32("custRole", (int)custData.RoleId!);
-
+                        HttpContext.Session.SetString("infoMsg", "Anda Berhasil Login");
                         return RedirectToAction("Index", "Home");
                     }
                     else
@@ -51,12 +51,13 @@ namespace XPOS340.web.Controllers
             {
                 HttpContext.Session.SetString("errMsg", ex.Message);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Index");
+            HttpContext.Session.SetString("infoMsg", "Anda Berhasil Logout");
+            return RedirectToAction("Index", "Home");
         }
 
     }

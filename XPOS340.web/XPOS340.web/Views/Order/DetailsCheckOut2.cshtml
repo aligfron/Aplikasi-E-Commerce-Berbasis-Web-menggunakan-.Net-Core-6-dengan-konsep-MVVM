@@ -11,6 +11,7 @@
     <thead>
         <tr>
             <th class="text-center">Date</th>
+            <th class="text-center">Customer Name</th>
             <th class="text-center">Transaction Code</th>
             <th class="text-center">Amount</th>
             <th class="text-center">Quantity</th>
@@ -25,6 +26,7 @@
             {
                 <tr>
                     <td class="text-center align-middle">@order.CreateDate</td>
+                    <td class="text-center align-middle">@Context.Session.GetString("custName")</td>
                     <td class="text-center align-middle">@order.TrxCode</td>
                     <td class="text-center align-middle">@order.Amount</td>
                     <td class="text-center align-middle">@order.TotalQty</td>
@@ -38,15 +40,10 @@
                             <i class="fas fa-check text-success"></i>
                         }
                     </td>
-                    <td class="text-center">
-                        <button class="btn btn-primary" id="btnDetails-@order.Id" data-id="@order.Id"
-                                data-bs-toggle="collapse" data-bs-target="#detail-row-@order.Id">
-                            <i class="fas fa-angle-down"></i>
-                        </button>
-                    </td>
+                    
                 </tr>
-                <tr id="detail-row-@order.Id" class="collapse">
-                    <td colspan="6">
+                <tr>
+                    <td colspan="7">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -77,8 +74,6 @@
                                             <button data-orderid="@order.Id" class="btn btn-danger btnCancelOrder"><i class="fas fa-circle-xmark"></i> Cancel</button>
                                             @Html.Raw("&nbsp;")
                                             <button data-orderid="@order.Id" class="btn btn-success btnCheckout"><i class="fas fa-shopping-bag"></i> Checkout</button>
-                                        }else{
-                                            <button data-orderid="@order.Id" class="btn btn-danger btnDetailOrder"><i class="fas fa-info"></i> Details</button>
                                         }
                                     </td>
                                 </tr>

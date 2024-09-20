@@ -31,7 +31,15 @@
             </div>
             <div class="card-title row">
                 <div class="col-4">Role Id</div>
-                <div class="col-8"><input type="text" class="form-control" name="RoleId"/></div>
+                <div class="col-8">
+                    <select name="RoleId" class="form-control">
+                        <option value="">-- Pilih Role --</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Pengguna</option>
+                    </select>
+                    </div>
+                    
+                    
             </div>
                                 <input type="hidden" name="CreateBy" value="2" />
          </form>
@@ -41,7 +49,7 @@
         
     </div>
     <div class="card-footer d-flex justify-content-end">
-        <button type="button" class="btn btn-success" id="btnSave">Save</button>
+        <button type="button" class="btn btn-success" id="btnSave">Registrasi</button>
         &nbsp;
         <button type="reset" class="btn btn-primary" id="btnReset">Reset</button>
     </div>
@@ -67,7 +75,7 @@
                             // Tampilkan alert sukses
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Data Berhasil Di Tambah',
+                                title: 'Berhasil Registrasi, Silahkan Melakukan Login',
                                 showConfirmButton: false,
                                 timer: 3000 // Show the alert for 2 seconds
                             }).then(() => {
