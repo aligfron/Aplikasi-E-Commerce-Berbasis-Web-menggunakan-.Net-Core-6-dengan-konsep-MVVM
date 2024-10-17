@@ -16,7 +16,7 @@ namespace XPOS340.web
             builder.Services.AddSession(
                 opt =>
                 {
-                    opt.IdleTimeout =TimeSpan.FromSeconds(30);
+                    opt.IdleTimeout =TimeSpan.FromMinutes(5);
                 }
                 );
 
